@@ -64,6 +64,45 @@ go build -o proser
 go install github.com/mongoose84/proser@latest
 ```
 
+> **Note**: After installing, if you get `command not found`, you need to add Go's bin directory to your PATH.
+
+#### Troubleshooting: Command Not Found
+
+If `proser` command is not found after installation, your Go bin directory is not in your PATH. Here are the solutions:
+
+**Option 1: Add Go bin to PATH (Recommended)**
+
+Find your Go bin directory:
+```bash
+go env GOPATH
+```
+
+Then add the bin directory to your PATH. Add this line to your shell config file (`~/.bashrc`, `~/.zshrc`, or `~/.profile`):
+
+```bash
+# For bash/zsh
+export PATH="$PATH:$(go env GOPATH)/bin"
+```
+
+Then reload your shell:
+```bash
+source ~/.bashrc  # or ~/.zshrc or ~/.profile
+```
+
+**Option 2: Run directly from GOPATH**
+
+```bash
+$(go env GOPATH)/bin/proser
+```
+
+**Option 3: Use `go run` (Development)**
+
+```bash
+# From a local clone
+cd /path/to/proser
+go run main.go
+```
+
 ## Usage
 
 Run PROSER in your project directory (or specify a target path):
