@@ -5,13 +5,12 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/mongoose84/proser/config"
 )
 
-func createFrontendInstructions(instructionsDir string, config ProjectConfig) error {
-	// Skip if no frontend
-	if config.FrontendLanguage == "" || strings.ToLower(config.FrontendLanguage) == "skip" {
-		return nil
-	}
+func createFrontendInstructions(instructionsDir string, cfg config.ProjectConfig) error {
+	// Function can safely assume cfg.Frontend is not nil since caller checks HasFrontend()
 
 	var sb strings.Builder
 
@@ -23,19 +22,19 @@ func createFrontendInstructions(instructionsDir string, config ProjectConfig) er
 
 	sb.WriteString("## Context Loading\n")
 	sb.WriteString("Review [project structure](../../README.md) and \n")
-	if config.FrontendFramework != "" && config.FrontendFramework != "Vanilla" {
-		sb.WriteString(fmt.Sprintf("[%s component patterns](../src/) before starting.\n\n", config.FrontendFramework))
+	if cfg.Frontend.Framework != "" && cfg.Frontend.Framework != "Vanilla" {
+		sb.WriteString(fmt.Sprintf("[%s component patterns](../src/) before starting.\n\n", cfg.Frontend.Framework))
 	} else {
 		sb.WriteString("[component patterns](../src/) before starting.\n\n")
 	}
 
 	sb.WriteString("## Technology Stack\n")
-	sb.WriteString(fmt.Sprintf("- **Language**: %s\n", config.FrontendLanguage))
-	if config.FrontendFramework != "" && config.FrontendFramework != "Vanilla" {
-		sb.WriteString(fmt.Sprintf("- **Framework**: %s\n", config.FrontendFramework))
+	sb.WriteString(fmt.Sprintf("- **Language**: %s\n", cfg.Frontend.Language))
+	if cfg.Frontend.Framework != "" && cfg.Frontend.Framework != "Vanilla" {
+		sb.WriteString(fmt.Sprintf("- **Framework**: %s\n", cfg.Frontend.Framework))
 	}
-	if config.FrontendBuildTool != "" {
-		sb.WriteString(fmt.Sprintf("- **Build Tool**: %s\n", config.FrontendBuildTool))
+	if cfg.Frontend.BuildTool != "" {
+		sb.WriteString(fmt.Sprintf("- **Build Tool**: %s\n", cfg.Frontend.BuildTool))
 	}
 	sb.WriteString("\n")
 
@@ -47,7 +46,7 @@ func createFrontendInstructions(instructionsDir string, config ProjectConfig) er
 	sb.WriteString("- Use semantic HTML elements\n")
 
 	// Language-specific best practices
-	lang := strings.ToLower(config.FrontendLanguage)
+	lang := strings.ToLower(cfg.Frontend.Language)
 	switch lang {
 	case "javascript", "js":
 		sb.WriteString("- Follow modern JavaScript best practices (ES6+)\n")
@@ -57,18 +56,18 @@ func createFrontendInstructions(instructionsDir string, config ProjectConfig) er
 		sb.WriteString("- Use proper type definitions and interfaces\n")
 		sb.WriteString("- Leverage TypeScript's type system for runtime safety\n")
 	default:
-		sb.WriteString(fmt.Sprintf("- Follow %s best practices and conventions\n", config.FrontendLanguage))
+		sb.WriteString(fmt.Sprintf("- Follow %s best practices and conventions\n", cfg.Frontend.Language))
 	}
 	sb.WriteString("\n")
 
-	if config.CodeStyle != "" {
+	if cfg.General.CodeStyle != "" {
 		sb.WriteString("## Project Code Style\n")
-		sb.WriteString(config.CodeStyle + "\n\n")
+		sb.WriteString(cfg.General.CodeStyle + "\n\n")
 	}
 
 	// Framework-specific guidelines
-	if config.FrontendFramework != "" && config.FrontendFramework != "Vanilla" {
-		framework := strings.ToLower(config.FrontendFramework)
+	if cfg.Frontend.Framework != "" && cfg.Frontend.Framework != "Vanilla" {
+		framework := strings.ToLower(cfg.Frontend.Framework)
 		switch framework {
 		case "react":
 			sb.WriteString("## React Guidelines\n")
@@ -89,8 +88,8 @@ func createFrontendInstructions(instructionsDir string, config ProjectConfig) er
 			sb.WriteString("- Implement reactive forms and proper validation\n")
 			sb.WriteString("- Use RxJS observables for async operations\n")
 		default:
-			sb.WriteString(fmt.Sprintf("## %s Guidelines\n", config.FrontendFramework))
-			sb.WriteString(fmt.Sprintf("- Follow %s best practices and patterns\n", config.FrontendFramework))
+			sb.WriteString(fmt.Sprintf("## %s Guidelines\n", cfg.Frontend.Framework))
+			sb.WriteString(fmt.Sprintf("- Follow %s best practices and patterns\n", cfg.Frontend.Framework))
 			sb.WriteString("- Maintain consistent code organization\n")
 		}
 	} else {
@@ -104,8 +103,8 @@ func createFrontendInstructions(instructionsDir string, config ProjectConfig) er
 	sb.WriteString("## Structured Output\n")
 	sb.WriteString("Generate code with:\n")
 	sb.WriteString("- [ ] Component documentation with usage examples\n")
-	if config.Language != "" {
-		lang := strings.ToLower(config.Language)
+	if cfg.Frontend.Language != "" {
+		lang := strings.ToLower(cfg.Frontend.Language)
 		if lang == "javascript" || lang == "typescript" || lang == "react" || lang == "js" || lang == "ts" {
 			sb.WriteString("- [ ] Proper TypeScript/JSDoc annotations\n")
 			sb.WriteString("- [ ] Unit tests with Jest/React Testing Library\n")
@@ -127,17 +126,14 @@ func createFrontendInstructions(instructionsDir string, config ProjectConfig) er
 	return os.WriteFile(filePath, []byte(sb.String()), 0644)
 }
 
-func createBackendInstructions(instructionsDir string, config ProjectConfig) error {
-	// Skip if no backend
-	if config.BackendLanguage == "" || strings.ToLower(config.BackendLanguage) == "skip" {
-		return nil
-	}
+func createBackendInstructions(instructionsDir string, cfg config.ProjectConfig) error {
+	// Function can safely assume cfg.Backend is not nil since caller checks HasBackend()
 
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
 	// Define file extensions based on backend language
-	lang := strings.ToLower(config.BackendLanguage)
+	lang := strings.ToLower(cfg.Backend.Language)
 	switch lang {
 	case "go":
 		sb.WriteString("applyTo: \"**/*.go\"\n")
@@ -161,12 +157,12 @@ func createBackendInstructions(instructionsDir string, config ProjectConfig) err
 	sb.WriteString("# Backend Development Guidelines\n\n")
 
 	sb.WriteString("## Technology Stack\n")
-	sb.WriteString(fmt.Sprintf("- **Language**: %s\n", config.BackendLanguage))
-	if config.BackendFramework != "" && config.BackendFramework != "None" {
-		sb.WriteString(fmt.Sprintf("- **Framework**: %s\n", config.BackendFramework))
+	sb.WriteString(fmt.Sprintf("- **Language**: %s\n", cfg.Backend.Language))
+	if cfg.Backend.Framework != "" && cfg.Backend.Framework != "None" {
+		sb.WriteString(fmt.Sprintf("- **Framework**: %s\n", cfg.Backend.Framework))
 	}
-	if config.BackendDatabase != "" {
-		sb.WriteString(fmt.Sprintf("- **Database**: %s\n", config.BackendDatabase))
+	if cfg.Backend.Database != "" {
+		sb.WriteString(fmt.Sprintf("- **Database**: %s\n", cfg.Backend.Database))
 	}
 	sb.WriteString("\n")
 
@@ -221,8 +217,8 @@ func createBackendInstructions(instructionsDir string, config ProjectConfig) err
 		sb.WriteString("- Follow Node.js best practices for modules\n")
 		sb.WriteString("- Use middleware patterns for request processing\n\n")
 	default:
-		sb.WriteString(fmt.Sprintf("## %s Guidelines\n", config.BackendLanguage))
-		sb.WriteString(fmt.Sprintf("- Follow %s best practices and idioms\n", config.BackendLanguage))
+		sb.WriteString(fmt.Sprintf("## %s Guidelines\n", cfg.Backend.Language))
+		sb.WriteString(fmt.Sprintf("- Follow %s best practices and idioms\n", cfg.Backend.Language))
 		sb.WriteString("- Use appropriate design patterns\n")
 		sb.WriteString("- Implement proper resource management\n\n")
 	}
@@ -244,28 +240,28 @@ func createBackendInstructions(instructionsDir string, config ProjectConfig) err
 	}
 	sb.WriteString("\n")
 
-	if config.CodeStyle != "" {
+	if cfg.General.CodeStyle != "" {
 		sb.WriteString("## Project Code Style\n")
-		sb.WriteString(config.CodeStyle + "\n\n")
+		sb.WriteString(cfg.General.CodeStyle + "\n\n")
 	}
 
-	if config.APIRules != "" {
+	if cfg.Backend.APIRules != "" {
 		sb.WriteString("## API Development\n")
-		sb.WriteString(config.APIRules + "\n")
+		sb.WriteString(cfg.Backend.APIRules + "\n")
 		sb.WriteString("- Use proper HTTP methods (GET, POST, PUT, DELETE, PATCH)\n")
 		sb.WriteString("- Validate all input data with appropriate error messages\n")
 		sb.WriteString("- Use structured JSON responses\n\n")
 	}
 
-	if config.Security != "" {
+	if cfg.General.Security != "" {
 		sb.WriteString("## Security Requirements\n")
-		sb.WriteString(config.Security + "\n\n")
+		sb.WriteString(cfg.General.Security + "\n\n")
 	}
 
 	sb.WriteString("## Structured Output\n")
 	sb.WriteString("Generate code with:\n")
-	if config.Language != "" {
-		lang := strings.ToLower(config.Language)
+	if cfg.Backend.Language != "" {
+		lang := strings.ToLower(cfg.Backend.Language)
 		switch lang {
 		case "go":
 			sb.WriteString("- [ ] Comprehensive error handling with wrapped errors\n")
@@ -302,7 +298,7 @@ func createBackendInstructions(instructionsDir string, config ProjectConfig) err
 	return os.WriteFile(filePath, []byte(sb.String()), 0644)
 }
 
-func createTestingInstructions(instructionsDir string, config ProjectConfig) error {
+func createTestingInstructions(instructionsDir string, cfg config.ProjectConfig) error {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
@@ -312,18 +308,18 @@ func createTestingInstructions(instructionsDir string, config ProjectConfig) err
 	sb.WriteString("# Testing Guidelines\n\n")
 
 	sb.WriteString("## Technology Stack\n")
-	if config.TestingFramework != "" {
-		sb.WriteString(fmt.Sprintf("- **Testing Framework**: %s\n", config.TestingFramework))
+	if cfg.Testing.Framework != "" {
+		sb.WriteString(fmt.Sprintf("- **Testing Framework**: %s\n", cfg.Testing.Framework))
 	}
-	if config.TestingStrategy != "" {
-		sb.WriteString(fmt.Sprintf("- **Testing Strategy**: %s\n", config.TestingStrategy))
+	if cfg.Testing.Strategy != "" {
+		sb.WriteString(fmt.Sprintf("- **Testing Strategy**: %s\n", cfg.Testing.Strategy))
 	}
 	// Include relevant backend/frontend languages for test context
-	if config.BackendLanguage != "" && strings.ToLower(config.BackendLanguage) != "skip" {
-		sb.WriteString(fmt.Sprintf("- **Backend Language**: %s\n", config.BackendLanguage))
+	if cfg.HasBackend() {
+		sb.WriteString(fmt.Sprintf("- **Backend Language**: %s\n", cfg.Backend.Language))
 	}
-	if config.FrontendLanguage != "" && strings.ToLower(config.FrontendLanguage) != "skip" {
-		sb.WriteString(fmt.Sprintf("- **Frontend Language**: %s\n", config.FrontendLanguage))
+	if cfg.HasFrontend() {
+		sb.WriteString(fmt.Sprintf("- **Frontend Language**: %s\n", cfg.Frontend.Language))
 	}
 	sb.WriteString("\n")
 
@@ -339,7 +335,7 @@ func createTestingInstructions(instructionsDir string, config ProjectConfig) err
 	sb.WriteString("- Test both happy paths and error conditions\n")
 
 	// Framework-specific testing patterns
-	framework := strings.ToLower(config.TestingFramework)
+	framework := strings.ToLower(cfg.Testing.Framework)
 	switch framework {
 	case "jest":
 		sb.WriteString("- Use describe/it blocks for test organization\n\n")
@@ -370,19 +366,19 @@ func createTestingInstructions(instructionsDir string, config ProjectConfig) err
 		sb.WriteString("- Use `testify` or similar assertion libraries when helpful\n")
 		sb.WriteString("- Implement setup and teardown in test functions\n\n")
 	default:
-		if config.TestingFramework != "" {
-			sb.WriteString(fmt.Sprintf("- Use appropriate testing patterns for %s\n\n", config.TestingFramework))
-			sb.WriteString(fmt.Sprintf("## %s Testing Patterns\n", config.TestingFramework))
-			sb.WriteString(fmt.Sprintf("- Follow %s best practices and conventions\n", config.TestingFramework))
+		if cfg.Testing.Framework != "" {
+			sb.WriteString(fmt.Sprintf("- Use appropriate testing patterns for %s\n\n", cfg.Testing.Framework))
+			sb.WriteString(fmt.Sprintf("## %s Testing Patterns\n", cfg.Testing.Framework))
+			sb.WriteString(fmt.Sprintf("- Follow %s best practices and conventions\n", cfg.Testing.Framework))
 			sb.WriteString("- Use appropriate assertion and mocking libraries\n\n")
 		} else {
 			sb.WriteString("- Use appropriate testing patterns for your framework\n\n")
 		}
 	}
 
-	if config.CodeStyle != "" {
+	if cfg.General.CodeStyle != "" {
 		sb.WriteString("## Code Style in Tests\n")
-		sb.WriteString(config.CodeStyle + "\n")
+		sb.WriteString(cfg.General.CodeStyle + "\n")
 		sb.WriteString("Apply the same style guidelines to test code.\n\n")
 	}
 
@@ -394,8 +390,8 @@ func createTestingInstructions(instructionsDir string, config ProjectConfig) err
 
 	sb.WriteString("## Structured Output\n")
 	sb.WriteString("Generate tests with:\n")
-	if config.Language != "" {
-		lang := strings.ToLower(config.Language)
+	if cfg.Backend != nil {
+		lang := strings.ToLower(cfg.Backend.Language)
 		switch lang {
 		case "go":
 			sb.WriteString("- [ ] Table-driven test patterns where appropriate\n")

@@ -5,9 +5,11 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/mongoose84/proser/config"
 )
 
-func createAgentMdFiles(config ProjectConfig) error {
+func createAgentMdFiles(cfg config.ProjectConfig) error {
 	fmt.Println("\n📂 Creating AGENT.md files in directory structure...")
 
 	// Get all directories in the current path, up to 3 levels deep
@@ -22,7 +24,7 @@ func createAgentMdFiles(config ProjectConfig) error {
 	}
 
 	for _, dir := range dirs {
-		if err := createAgentMdInDirectory(dir, config); err != nil {
+		if err := createAgentMdInDirectory(dir, cfg); err != nil {
 			fmt.Printf("⚠️  Warning: failed to create AGENT.md in %s: %v\n", dir, err)
 		} else {
 			fmt.Printf("  ✓ Created AGENT.md in %s\n", dir)
@@ -67,7 +69,7 @@ func findDirectories(root string, maxDepth int) ([]string, error) {
 	return dirs, err
 }
 
-func createAgentMdInDirectory(dir string, config ProjectConfig) error {
+func createAgentMdInDirectory(dir string, cfg config.ProjectConfig) error {
 	dirName := filepath.Base(dir)
 	relPath := dir
 
@@ -75,30 +77,25 @@ func createAgentMdInDirectory(dir string, config ProjectConfig) error {
 
 	sb.WriteString(fmt.Sprintf("# Agent Instructions for %s\n\n", dirName))
 	sb.WriteString("## Directory Context\n")
-	sb.WriteString(fmt.Sprintf("This directory is part of the %s project located at: %s\n\n", config.ProjectName, relPath))
+	sb.WriteString(fmt.Sprintf("This directory is part of the %s project located at: %s\n\n", cfg.General.ProjectName, relPath))
 	sb.WriteString("## Purpose\n")
 	sb.WriteString(fmt.Sprintf("This directory contains code and resources related to: %s\n\n", dirName))
 
 	sb.WriteString("## Guidelines\n\n")
 
-	if config.CodeStyle != "" {
+	if cfg.General.CodeStyle != "" {
 		sb.WriteString("### Code Style\n")
-		sb.WriteString(config.CodeStyle + "\n\n")
+		sb.WriteString(cfg.General.CodeStyle + "\n\n")
 	}
 
-	if config.Language != "" {
-		sb.WriteString("### Language\n")
-		sb.WriteString(fmt.Sprintf("All code in this directory should be written in %s.\n\n", config.Language))
-	}
-
-	if config.APIRules != "" {
+	if cfg.HasBackend() && cfg.Backend.APIRules != "" {
 		sb.WriteString("### API Rules\n")
-		sb.WriteString(config.APIRules + "\n\n")
+		sb.WriteString(cfg.Backend.APIRules + "\n\n")
 	}
 
-	if config.Security != "" {
+	if cfg.General.Security != "" {
 		sb.WriteString("### Security\n")
-		sb.WriteString(config.Security + "\n\n")
+		sb.WriteString(cfg.General.Security + "\n\n")
 	}
 
 	sb.WriteString(`## Working in This Directory

@@ -5,16 +5,18 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/mongoose84/proser/config"
 )
 
-func setupGithubFolder(config ProjectConfig) error {
+func setupGithubFolder(cfg config.ProjectConfig) error {
 	githubDir := ".github"
 	if err := os.MkdirAll(githubDir, 0755); err != nil {
 		return fmt.Errorf("failed to create .github directory: %w", err)
 	}
 
 	// Create copilot-instructions.md (global rules)
-	if err := createCopilotInstructions(githubDir, config); err != nil {
+	if err := createCopilotInstructions(githubDir, cfg); err != nil {
 		return err
 	}
 
@@ -25,22 +27,21 @@ func setupGithubFolder(config ProjectConfig) error {
 	}
 
 	// Create specific instruction files based on configuration
-	if config.FrontendLanguage != "" && strings.ToLower(config.FrontendLanguage) != "skip" {
-		if err := createFrontendInstructions(instructionsDir, config); err != nil {
+	if cfg.HasFrontend() {
+		if err := createFrontendInstructions(instructionsDir, cfg); err != nil {
 			return err
 		}
 	}
 
-	if config.BackendLanguage != "" && strings.ToLower(config.BackendLanguage) != "skip" {
-		if err := createBackendInstructions(instructionsDir, config); err != nil {
+	if cfg.HasBackend() {
+		if err := createBackendInstructions(instructionsDir, cfg); err != nil {
 			return err
 		}
 	}
 
 	// Always create testing instructions if we have any technology
-	if (config.FrontendLanguage != "" && strings.ToLower(config.FrontendLanguage) != "skip") ||
-		(config.BackendLanguage != "" && strings.ToLower(config.BackendLanguage) != "skip") {
-		if err := createTestingInstructions(instructionsDir, config); err != nil {
+	if cfg.HasFrontend() || cfg.HasBackend() {
+		if err := createTestingInstructions(instructionsDir, cfg); err != nil {
 			return err
 		}
 	}
@@ -48,14 +49,14 @@ func setupGithubFolder(config ProjectConfig) error {
 	return nil
 }
 
-func createCopilotInstructions(githubDir string, config ProjectConfig) error {
+func createCopilotInstructions(githubDir string, cfg config.ProjectConfig) error {
 	var sb strings.Builder
 
 	sb.WriteString(fmt.Sprintf("# Global Repository Instructions\n\n"))
 
 	sb.WriteString("## Project Overview\n")
-	if config.Description != "" {
-		sb.WriteString(config.Description + "\n\n")
+	if cfg.General.Description != "" {
+		sb.WriteString(cfg.General.Description + "\n\n")
 	} else {
 		sb.WriteString("This project follows specific development guidelines for different technology stacks.\n\n")
 	}
@@ -68,52 +69,49 @@ func createCopilotInstructions(githubDir string, config ProjectConfig) error {
 	sb.WriteString("- Maintain consistent code formatting and style\n\n")
 
 	// Technology stack overview
-	hasFrontend := config.FrontendLanguage != "" && strings.ToLower(config.FrontendLanguage) != "skip"
-	hasBackend := config.BackendLanguage != "" && strings.ToLower(config.BackendLanguage) != "skip"
-
-	if hasFrontend || hasBackend {
+	if cfg.HasFrontend() || cfg.HasBackend() {
 		sb.WriteString("## Technology Stack\n")
-		if hasBackend {
-			sb.WriteString(fmt.Sprintf("- **Backend**: %s", config.BackendLanguage))
-			if config.BackendFramework != "" && config.BackendFramework != "None" {
-				sb.WriteString(fmt.Sprintf(" with %s", config.BackendFramework))
+		if cfg.HasBackend() {
+			sb.WriteString(fmt.Sprintf("- **Backend**: %s", cfg.Backend.Language))
+			if cfg.Backend.Framework != "" && cfg.Backend.Framework != "None" {
+				sb.WriteString(fmt.Sprintf(" with %s", cfg.Backend.Framework))
 			}
 			sb.WriteString("\n")
 		}
-		if hasFrontend {
-			sb.WriteString(fmt.Sprintf("- **Frontend**: %s", config.FrontendLanguage))
-			if config.FrontendFramework != "" && config.FrontendFramework != "Vanilla" {
-				sb.WriteString(fmt.Sprintf(" with %s", config.FrontendFramework))
+		if cfg.HasFrontend() {
+			sb.WriteString(fmt.Sprintf("- **Frontend**: %s", cfg.Frontend.Language))
+			if cfg.Frontend.Framework != "" && cfg.Frontend.Framework != "Vanilla" {
+				sb.WriteString(fmt.Sprintf(" with %s", cfg.Frontend.Framework))
 			}
 			sb.WriteString("\n")
 		}
-		if config.BackendDatabase != "" {
-			sb.WriteString(fmt.Sprintf("- **Database**: %s\n", config.BackendDatabase))
+		if cfg.HasBackend() && cfg.Backend.Database != "" {
+			sb.WriteString(fmt.Sprintf("- **Database**: %s\n", cfg.Backend.Database))
 		}
-		if config.TestingFramework != "" {
-			sb.WriteString(fmt.Sprintf("- **Testing**: %s\n", config.TestingFramework))
+		if cfg.Testing.Framework != "" {
+			sb.WriteString(fmt.Sprintf("- **Testing**: %s\n", cfg.Testing.Framework))
 		}
 		sb.WriteString("\n")
 	}
 
-	if config.CodeStyle != "" {
+	if cfg.General.CodeStyle != "" {
 		sb.WriteString("## Code Style\n")
-		sb.WriteString(config.CodeStyle + "\n\n")
+		sb.WriteString(cfg.General.CodeStyle + "\n\n")
 	}
 
-	if config.APIRules != "" {
+	if cfg.HasBackend() && cfg.Backend.APIRules != "" {
 		sb.WriteString("## API Guidelines\n")
-		sb.WriteString(config.APIRules + "\n\n")
+		sb.WriteString(cfg.Backend.APIRules + "\n\n")
 	}
 
-	if config.Security != "" {
+	if cfg.General.Security != "" {
 		sb.WriteString("## Security Requirements\n")
-		sb.WriteString(config.Security + "\n\n")
+		sb.WriteString(cfg.General.Security + "\n\n")
 	}
 
-	if config.CustomRules != "" && config.CustomRules != "None" {
+	if cfg.General.CustomRules != "" && cfg.General.CustomRules != "None" {
 		sb.WriteString("## Custom Project Rules\n")
-		sb.WriteString(config.CustomRules + "\n\n")
+		sb.WriteString(cfg.General.CustomRules + "\n\n")
 	}
 
 	sb.WriteString("## Documentation Standards\n")
