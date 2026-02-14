@@ -412,8 +412,8 @@ jobs:
 func createAgentMdFiles(config ProjectConfig) error {
 	fmt.Println("\n📂 Creating AGENT.md files in directory structure...")
 
-	// Get all directories in the current path, up to 4 levels deep
-	dirs, err := findDirectories(".", 4)
+	// Get all directories in the current path, up to 3 levels deep
+	dirs, err := findDirectories(".", 3)
 	if err != nil {
 		return fmt.Errorf("failed to find directories: %w", err)
 	}
