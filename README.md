@@ -2,19 +2,51 @@
 
 **PRO**SE framework **SE**tup and **R**esource generator
 
-Automate how to add all the PROSE framework files to your projects with interactive configuration.
+Automate setting up GitHub Copilot PROSE framework files for your projects with interactive configuration.
 
 ## What is PROSER?
 
-PROSER is a command-line tool that helps you set up GitHub Copilot Workspace (PROSE framework) configuration files for your projects. It interactively collects information about your project and generates customized configuration files tailored to your needs.
+PROSER is a command-line tool that helps you set up GitHub Copilot Workspace (PROSE framework) configuration files for your projects. It interactively collects information about your project and generates customized configuration files tailored to your technology stack and requirements.
 
 ## Features
 
-- 🎯 **Interactive Setup**: Asks relevant questions about your project
+- 🎯 **Interactive Setup**: Asks relevant questions based on your project type
 - 📝 **Customized Templates**: Generates project-specific configuration files
-- 🤖 **Agent Instructions**: Creates AGENT.md files in subdirectories (up to 4 levels deep)
+- 🏗️ **Multi-Project Types**: Supports fullstack, frontend-only, and backend-only projects
+- 🤖 **Agent Instructions**: Creates AGENT.md files in subdirectories (up to 3 levels deep)
 - 🔧 **GitHub Integration**: Sets up .github folder with Copilot instructions
-- 🚀 **CI/CD Ready**: Includes example workflow files based on your language
+- 🧩 **Extensible Architecture**: Easy to add new generators and project types
+- ✅ **SOLID Principles**: Clean, maintainable, and testable codebase
+
+## Architecture
+
+PROSER follows a modular, generator-based architecture:
+
+- **Generator Interface**: All PROSE file types implement a common interface
+- **FileSystem Abstraction**: Enables testing without touching disk
+- **Language Registry**: Data-driven language and framework metadata
+- **Project Types**: Define which generators run for different project types
+- **Input Collection**: Abstract user input for testability
+
+### Project Structure
+
+```
+proser/
+├── main.go                   # Entry point and orchestrator
+├── config/                   # Project configuration
+├── input/                    # Input collection interfaces
+├── project/                  # Project type definitions
+├── generator/                # Generator implementations
+│   ├── copilot_instructions.go
+│   ├── frontend_instructions.go
+│   ├── backend_instructions.go
+│   ├── testing_instructions.go
+│   ├── agent_md.go
+│   └── future.go            # Stub generators for future file types
+├── language/                 # Language & framework registry
+├── filesystem/               # Filesystem abstraction
+└── template/                 # Shared template helpers
+```
 
 ## Installation
 
@@ -34,30 +66,45 @@ go install github.com/mongoose84/proser@latest
 
 ## Usage
 
-1. Navigate to your project directory:
-```bash
-cd /path/to/your/project
-```
+Run PROSER in your project directory (or specify a target path):
 
-2. Run PROSER:
 ```bash
+# Run in current directory
 proser
+
+# Run in a specific directory
+proser /path/to/your/project
+
+# Show help
+proser --help
 ```
 
-3. Answer the interactive prompts about your project:
-   - Project name
-   - Project description
-   - Primary programming language
-   - Code style guidelines
-   - API design rules
-   - Security requirements
-   - Additional custom rules
+### Interactive Prompts
 
-4. PROSER will generate:
-   - `.github/copilot-instructions.md` - Main Copilot instructions
-   - `.github/agents/general-instructions.md` - Agent-specific instructions
-   - `.github/workflows/ci.yml` - Example CI workflow for your language
-   - `AGENT.md` files in subdirectories (up to 4 levels deep)
+PROSER will ask you to select a project type and then collect information specific to that type:
+
+**Project Types:**
+- **Fullstack**: Frontend + Backend application
+- **Frontend**: Frontend-only application
+- **Backend**: Backend/API service only
+
+**Questions include:**
+- Project name and description
+- Code style guidelines
+- Security requirements
+- Frontend language, framework, and build tool (if applicable)
+- Backend language, framework, and database (if applicable)
+- Testing framework and strategy
+
+### Generated Files
+
+PROSER creates the following files:
+
+- `.github/copilot-instructions.md` - Global repository instructions
+- `.github/instructions/frontend.instructions.md` - Frontend-specific guidelines (if applicable)
+- `.github/instructions/backend.instructions.md` - Backend-specific guidelines (if applicable)
+- `.github/instructions/testing.instructions.md` - Testing guidelines
+- `AGENT.md` files in subdirectories (automatically skips node_modules, vendor, bin, etc.)
 
 ## Example
 
@@ -67,37 +114,171 @@ $ proser
 PROSER - PROSE Framework Setup Tool
 ===========================================
 
+📁 Target directory: /home/user/awesome-api
+
+Select project type:
+  1. fullstack - Full-stack application with frontend and backend
+  2. frontend - Frontend application only
+  3. backend - Backend/API service only
+
+Enter project type (fullstack/frontend/backend) [fullstack]: backend
+
 Please answer the following questions about your project:
 
 Project name [my-project]: awesome-api
 Project description [A software project]: REST API for awesome service
-Primary programming language (e.g., Go, Python, JavaScript, Java) [Go]: Go
-Code style guidelines (e.g., follow PEP8, use gofmt, ESLint rules) [Follow standard formatting]: Use gofmt and golangci-lint
-API design rules (e.g., RESTful, GraphQL standards, versioning strategy) [RESTful API design]: RESTful with versioned endpoints
-Security requirements (e.g., authentication methods, data encryption, OWASP compliance) [Follow OWASP top 10]: JWT auth, TLS 1.3, OWASP compliance
+General code style guidelines [Follow standard formatting]: Use gofmt and golangci-lint
+Security requirements [Follow OWASP top 10]: JWT auth, TLS 1.3, OWASP compliance
 Additional custom rules or guidelines [None]: Use structured logging
+Backend language [Go]: Go
+Backend framework [None]: Gin
+Primary database [PostgreSQL]: PostgreSQL
+API design rules [RESTful API design]: RESTful with versioned endpoints
+Primary testing framework [Jest]: Go testing
+Testing strategy focus [Unit and Integration tests]: Table-driven unit tests and integration tests
 
 📋 Configuration Summary:
   Project: awesome-api
-  Language: Go
+  Description: REST API for awesome service
+  Backend: Go with Gin + PostgreSQL
+  Testing: Go testing (Table-driven unit tests and integration tests)
   Code Style: Use gofmt and golangci-lint
   API Rules: RESTful with versioned endpoints
   Security: JWT auth, TLS 1.3, OWASP compliance
+  Custom Rules: Use structured logging
 
 📝 Generating files based on your configuration...
-
-📂 Creating AGENT.md files in directory structure...
-  ✓ Created AGENT.md in src
-  ✓ Created AGENT.md in src/core
-  ✓ Created AGENT.md in src/core/api
-  ✓ Created AGENT.md in src/core/api/handlers
+  ✓ Generated copilot-instructions files
+  ✓ Generated backend-instructions files
+  ✓ Generated testing-instructions files
+  ✓ Generated agent-md files
 
 ✅ Setup complete!
 📁 Files created in .github/
-📄 AGENT.md files created in subdirectories (4 levels deep)
+📄 AGENT.md files created in subdirectories
 
 🎉 Your project is now configured for PROSE framework!
 ```
+
+## Supported Languages and Frameworks
+
+### Languages
+- Go
+- Python
+- Java
+- JavaScript/Node.js
+- TypeScript
+- Rust
+- C#
+
+### Frontend Frameworks
+- React
+- Vue
+- Angular
+- Vanilla JS/TS
+
+### Testing Frameworks
+- Jest (JavaScript/TypeScript)
+- pytest (Python)
+- JUnit (Java)
+- Go testing (Go)
+
+## Extending PROSER
+
+### Adding a New Language
+
+Add a new language definition in `language/languages.go`:
+
+```go
+r.RegisterLanguage(&LanguageInfo{
+    Name:           "ruby",
+    Aliases:        []string{"rb"},
+    FileExtensions: []string{".rb"},
+    Guidelines: []string{
+        "- Follow Ruby best practices and idioms",
+        "- Use proper exception handling",
+    },
+    BestPractices: []string{
+        "- Follow Ruby style guide",
+        "- Use RuboCop for linting",
+    },
+    TestingPatterns: []string{
+        "- [ ] RSpec test suites",
+    },
+})
+```
+
+### Adding a New Project Type
+
+Create a new type in `project/types.go`:
+
+```go
+type MobileProject struct{}
+
+func (p *MobileProject) Name() string {
+    return "mobile"
+}
+
+func (p *MobileProject) Description() string {
+    return "Mobile application (iOS/Android)"
+}
+
+func (p *MobileProject) Generators() []generator.Generator {
+    return []generator.Generator{
+        &generator.CopilotInstructionsGenerator{},
+        &generator.MobileInstructionsGenerator{}, // Create this
+        &generator.AgentMdGenerator{},
+    }
+}
+
+func (p *MobileProject) Questions() []input.Question {
+    return append(generalQuestions(), mobileQuestions()...)
+}
+```
+
+Register it in `project/project_type.go`:
+
+```go
+func init() {
+    Register(&MobileProject{})
+}
+```
+
+### Adding a New Generator
+
+Create a new generator in `generator/`:
+
+```go
+type PromptsGenerator struct{}
+
+func (g *PromptsGenerator) Name() string {
+    return "prompts"
+}
+
+func (g *PromptsGenerator) Generate(ctx GenerateContext) (map[string]string, error) {
+    files := make(map[string]string)
+    // Generate .github/prompts/*.prompt.md files
+    files[".github/prompts/refactor.prompt.md"] = "# Refactoring Prompt\n..."
+    return files, nil
+}
+```
+
+## Contributing
+
+Contributions are welcome! Please ensure:
+
+1. Code follows Go best practices
+2. New features include tests
+3. Architecture principles are maintained (SOLID, DRY, etc.)
+4. Documentation is updated
+
+## License
+
+MIT License - See LICENSE file for details
+
+## Credits
+
+Inspired by the GitHub Copilot Workspace PROSE framework.
 
 ## Generated Files
 

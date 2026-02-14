@@ -171,3 +171,23 @@ func displaySummary(cfg config.ProjectConfig) {
 		fmt.Printf("  Custom Rules: %s\n", cfg.General.CustomRules)
 	}
 }
+
+// printHelp displays usage information
+func printHelp() {
+	fmt.Println("Usage: proser [options] [target-path]")
+	fmt.Println()
+	fmt.Println("Arguments:")
+	fmt.Println("  target-path    Path to the project to set up (default: current directory)")
+	fmt.Println()
+	fmt.Println("Options:")
+	fmt.Println("  -h, --help     Show this help message")
+	fmt.Println()
+	fmt.Println("Description:")
+	fmt.Println("  PROSER generates GitHub Copilot PROSE framework files for your project.")
+	fmt.Println("  It creates .github/copilot-instructions.md, .instructions.md files,")
+	fmt.Println("  and AGENT.md files in subdirectories based on your project configuration.")
+	fmt.Println()
+	fmt.Println("Examples:")
+	fmt.Println("  proser                    # Setup in current directory")
+	fmt.Println("  proser /path/to/project   # Setup in specified directory")
+}
