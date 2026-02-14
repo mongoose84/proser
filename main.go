@@ -423,7 +423,7 @@ func findDirectories(root string, maxDepth int) ([]string, error) {
 
 			if depth <= maxDepth {
 				dirs = append(dirs, path)
-			} else if depth > maxDepth {
+			} else {
 				return filepath.SkipDir
 			}
 		}
