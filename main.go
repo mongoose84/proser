@@ -48,7 +48,8 @@ func collectUserInput() ProjectConfig {
 	reader := bufio.NewReader(os.Stdin)
 	config := ProjectConfig{}
 
-	fmt.Println("Please answer the following questions about your project:\n")
+	fmt.Println("Please answer the following questions about your project:")
+	fmt.Println()
 
 	config.ProjectName = promptUser(reader, "Project name", "my-project")
 	config.Description = promptUser(reader, "Project description", "A software project")
