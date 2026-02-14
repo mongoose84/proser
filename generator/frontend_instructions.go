@@ -15,122 +15,116 @@ func (g *FrontendInstructionsGenerator) Name() string {
 
 // Generate creates frontend instructions content
 func (g *FrontendInstructionsGenerator) Generate(ctx GenerateContext) (map[string]string, error) {
-	// Skip if no frontend configuration
 	if !ctx.Config.HasFrontend() {
 		return map[string]string{}, nil
 	}
 
+	cfg := ctx.Config
+	lang := strings.ToLower(cfg.Frontend.Language)
+
 	var sb strings.Builder
 
+	// --- Frontmatter ---
 	sb.WriteString("---\n")
-	sb.WriteString("applyTo: \"**/*.{jsx,tsx,css,js,ts,html,vue,scss,sass,less}\"\n")
-	sb.WriteString("description: \"Frontend development guidelines for UI components\"\n")
+	sb.WriteString(fmt.Sprintf("applyTo: \"%s\"\n", frontendApplyTo(lang, cfg.Frontend.Framework)))
+	sb.WriteString(fmt.Sprintf("description: \"%s development guidelines with context engineering\"\n",
+		cfg.Frontend.Language))
 	sb.WriteString("---\n")
-	sb.WriteString("# Frontend Development Guidelines\n\n")
+	sb.WriteString(fmt.Sprintf("# %s Development Guidelines\n\n", cfg.Frontend.Language))
 
+	// --- Context Loading ---
 	sb.WriteString("## Context Loading\n")
-	sb.WriteString("Review [project structure](../../README.md) and \n")
-	if ctx.Config.Frontend.Framework != "" && ctx.Config.Frontend.Framework != "Vanilla" {
-		sb.WriteString(fmt.Sprintf("[%s component patterns](../src/) before starting.\n\n", ctx.Config.Frontend.Framework))
+	sb.WriteString("Review [project conventions](../../README.md)")
+	if cfg.Frontend.Framework != "" && cfg.Frontend.Framework != "Vanilla" {
+		sb.WriteString(fmt.Sprintf(" and\n[%s component patterns](../../src/) before starting.\n\n",
+			cfg.Frontend.Framework))
 	} else {
-		sb.WriteString("[component patterns](../src/) before starting.\n\n")
+		sb.WriteString(" and\n[component patterns](../../src/) before starting.\n\n")
 	}
 
-	sb.WriteString("## Technology Stack\n")
-	sb.WriteString(fmt.Sprintf("- **Language**: %s\n", ctx.Config.Frontend.Language))
-	if ctx.Config.Frontend.Framework != "" && ctx.Config.Frontend.Framework != "Vanilla" {
-		sb.WriteString(fmt.Sprintf("- **Framework**: %s\n", ctx.Config.Frontend.Framework))
-	}
-	if ctx.Config.Frontend.BuildTool != "" {
-		sb.WriteString(fmt.Sprintf("- **Build Tool**: %s\n", ctx.Config.Frontend.BuildTool))
-	}
-	sb.WriteString("\n")
-
+	// --- Deterministic Requirements ---
 	sb.WriteString("## Deterministic Requirements\n")
-	sb.WriteString("- Use consistent component structure and naming conventions\n")
-	sb.WriteString("- Implement proper state management patterns\n")
-	sb.WriteString("- Apply responsive design principles\n")
-	sb.WriteString("- Ensure accessibility (WCAG guidelines)\n")
-	sb.WriteString("- Use semantic HTML elements\n")
 
-	// Language-specific best practices
-	lang := strings.ToLower(ctx.Config.Frontend.Language)
+	// Language-specific requirements
 	switch lang {
+	case "typescript", "ts":
+		sb.WriteString("- Use strict TypeScript configuration\n")
+		sb.WriteString("- Define proper type definitions and interfaces\n")
+		sb.WriteString("- Avoid `any` — leverage the type system for safety\n")
 	case "javascript", "js":
 		sb.WriteString("- Follow modern JavaScript best practices (ES6+)\n")
 		sb.WriteString("- Use proper module imports/exports\n")
-	case "typescript", "ts":
-		sb.WriteString("- Follow TypeScript best practices with strict mode\n")
-		sb.WriteString("- Use proper type definitions and interfaces\n")
-		sb.WriteString("- Leverage TypeScript's type system for runtime safety\n")
 	default:
-		sb.WriteString(fmt.Sprintf("- Follow %s best practices and conventions\n", ctx.Config.Frontend.Language))
+		sb.WriteString(fmt.Sprintf("- Follow %s best practices and conventions\n", cfg.Frontend.Language))
+	}
+
+	// Framework-specific requirements
+	if cfg.Frontend.Framework != "" && cfg.Frontend.Framework != "Vanilla" {
+		switch strings.ToLower(cfg.Frontend.Framework) {
+		case "react":
+			sb.WriteString("- Prefer functional components with hooks\n")
+			sb.WriteString("- Implement error boundaries for React components\n")
+		case "vue":
+			sb.WriteString("- Use Vue 3 Composition API\n")
+			sb.WriteString("- Follow single-file component structure\n")
+		case "angular":
+			sb.WriteString("- Follow the Angular style guide\n")
+			sb.WriteString("- Use dependency injection and RxJS observables\n")
+		default:
+			sb.WriteString(fmt.Sprintf("- Follow %s patterns and conventions\n", cfg.Frontend.Framework))
+		}
+	}
+
+	// Universal frontend requirements
+	sb.WriteString("- Ensure accessibility (WCAG guidelines, semantic HTML)\n")
+	sb.WriteString("- Apply responsive design principles\n")
+
+	if cfg.General.CodeStyle != "" {
+		sb.WriteString(fmt.Sprintf("- %s\n", cfg.General.CodeStyle))
+	}
+	if cfg.General.Security != "" {
+		sb.WriteString(fmt.Sprintf("- %s\n", cfg.General.Security))
 	}
 	sb.WriteString("\n")
 
-	if ctx.Config.General.CodeStyle != "" {
-		sb.WriteString("## Project Code Style\n")
-		sb.WriteString(ctx.Config.General.CodeStyle + "\n\n")
-	}
-
-	// Framework-specific guidelines
-	if ctx.Config.Frontend.Framework != "" && ctx.Config.Frontend.Framework != "Vanilla" {
-		framework := strings.ToLower(ctx.Config.Frontend.Framework)
-		switch framework {
-		case "react":
-			sb.WriteString("## React Guidelines\n")
-			sb.WriteString("- Prefer functional components with hooks over class components\n")
-			sb.WriteString("- Use proper prop validation (PropTypes or TypeScript)\n")
-			sb.WriteString("- Follow React hook rules and best practices\n")
-			sb.WriteString("- Use React.memo() for performance optimization when needed\n")
-		case "vue":
-			sb.WriteString("## Vue.js Guidelines\n")
-			sb.WriteString("- Use Vue 3 Composition API when possible\n")
-			sb.WriteString("- Follow Vue single-file component structure\n")
-			sb.WriteString("- Use proper reactive data patterns\n")
-			sb.WriteString("- Implement proper component lifecycle management\n")
-		case "angular":
-			sb.WriteString("## Angular Guidelines\n")
-			sb.WriteString("- Follow Angular style guide and conventions\n")
-			sb.WriteString("- Use dependency injection properly\n")
-			sb.WriteString("- Implement reactive forms and proper validation\n")
-			sb.WriteString("- Use RxJS observables for async operations\n")
-		default:
-			sb.WriteString(fmt.Sprintf("## %s Guidelines\n", ctx.Config.Frontend.Framework))
-			sb.WriteString(fmt.Sprintf("- Follow %s best practices and patterns\n", ctx.Config.Frontend.Framework))
-			sb.WriteString("- Maintain consistent code organization\n")
-		}
-	} else {
-		sb.WriteString("## Component Guidelines\n")
-		sb.WriteString("- Keep components small and focused on single responsibility\n")
-		sb.WriteString("- Use vanilla JavaScript/DOM manipulation best practices\n")
-	}
-	sb.WriteString("- Use proper event handling and cleanup\n")
-	sb.WriteString("- Implement error boundaries where appropriate\n\n")
-
+	// --- Structured Output ---
 	sb.WriteString("## Structured Output\n")
 	sb.WriteString("Generate code with:\n")
-	sb.WriteString("- [ ] Component documentation with usage examples\n")
-	if ctx.Config.Frontend.Language != "" {
-		lang := strings.ToLower(ctx.Config.Frontend.Language)
-		if lang == "javascript" || lang == "typescript" || lang == "react" || lang == "js" || lang == "ts" {
-			sb.WriteString("- [ ] Proper TypeScript/JSDoc annotations\n")
-			sb.WriteString("- [ ] Unit tests with Jest/React Testing Library\n")
-		} else if lang == "python" {
-			sb.WriteString("- [ ] Python docstrings and type hints\n")
-			sb.WriteString("- [ ] Unit tests with pytest or unittest\n")
-		} else {
-			sb.WriteString("- [ ] Proper documentation and type annotations\n")
-			sb.WriteString("- [ ] Unit tests with appropriate testing framework\n")
-		}
-	} else {
-		sb.WriteString("- [ ] Proper documentation and annotations\n")
-		sb.WriteString("- [ ] Unit tests for components\n")
+
+	switch lang {
+	case "typescript", "ts":
+		sb.WriteString("- [ ] JSDoc comments for all public APIs\n")
+		sb.WriteString("- [ ] Type exports in appropriate index files\n")
+	case "javascript", "js":
+		sb.WriteString("- [ ] JSDoc comments for all public APIs\n")
+	default:
+		sb.WriteString("- [ ] Documentation and type annotations for public APIs\n")
 	}
-	sb.WriteString("- [ ] Accessibility attributes (aria-labels, roles, etc.)\n")
+
+	sb.WriteString("- [ ] Unit tests in appropriate test directory\n")
+	sb.WriteString("- [ ] Accessibility attributes (aria-labels, roles)\n")
 	sb.WriteString("- [ ] Loading and error states for async operations\n")
 
 	return map[string]string{
 		".github/instructions/frontend.instructions.md": sb.String(),
 	}, nil
+}
+
+// frontendApplyTo returns the applyTo glob for a given frontend language/framework
+func frontendApplyTo(lang, framework string) string {
+	fw := strings.ToLower(framework)
+	switch {
+	case fw == "vue":
+		return "**/*.{vue,js,ts,css,scss,sass,less}"
+	case fw == "angular":
+		return "**/*.{ts,html,css,scss,sass,less}"
+	}
+	switch lang {
+	case "typescript", "ts":
+		return "**/*.{ts,tsx,css,scss,sass,less}"
+	case "javascript", "js":
+		return "**/*.{js,jsx,css,scss,sass,less}"
+	default:
+		return "**/*.{js,jsx,ts,tsx,css,html,vue,scss,sass,less}"
+	}
 }
