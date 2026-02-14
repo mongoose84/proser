@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/mongoose84/proser/config"
+	"github.com/mongoose84/proser/filesystem"
 )
 
-func createFrontendInstructions(instructionsDir string, cfg config.ProjectConfig) error {
+func createFrontendInstructions(instructionsDir string, cfg config.ProjectConfig, fs filesystem.FileSystem) error {
 	// Function can safely assume cfg.Frontend is not nil since caller checks HasFrontend()
 
 	var sb strings.Builder
@@ -123,10 +123,10 @@ func createFrontendInstructions(instructionsDir string, cfg config.ProjectConfig
 	sb.WriteString("- [ ] Loading and error states for async operations\n")
 
 	filePath := filepath.Join(instructionsDir, "frontend.instructions.md")
-	return os.WriteFile(filePath, []byte(sb.String()), 0644)
+	return fs.WriteFile(filePath, []byte(sb.String()), 0644)
 }
 
-func createBackendInstructions(instructionsDir string, cfg config.ProjectConfig) error {
+func createBackendInstructions(instructionsDir string, cfg config.ProjectConfig, fs filesystem.FileSystem) error {
 	// Function can safely assume cfg.Backend is not nil since caller checks HasBackend()
 
 	var sb strings.Builder
@@ -295,10 +295,10 @@ func createBackendInstructions(instructionsDir string, cfg config.ProjectConfig)
 	sb.WriteString("- [ ] Graceful shutdown handling for services\n")
 
 	filePath := filepath.Join(instructionsDir, "backend.instructions.md")
-	return os.WriteFile(filePath, []byte(sb.String()), 0644)
+	return fs.WriteFile(filePath, []byte(sb.String()), 0644)
 }
 
-func createTestingInstructions(instructionsDir string, cfg config.ProjectConfig) error {
+func createTestingInstructions(instructionsDir string, cfg config.ProjectConfig, fs filesystem.FileSystem) error {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
@@ -420,5 +420,5 @@ func createTestingInstructions(instructionsDir string, cfg config.ProjectConfig)
 	sb.WriteString("- [ ] Mock implementations for external dependencies\n")
 
 	filePath := filepath.Join(instructionsDir, "testing.instructions.md")
-	return os.WriteFile(filePath, []byte(sb.String()), 0644)
+	return fs.WriteFile(filePath, []byte(sb.String()), 0644)
 }

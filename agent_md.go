@@ -7,13 +7,14 @@ import (
 	"strings"
 
 	"github.com/mongoose84/proser/config"
+	"github.com/mongoose84/proser/filesystem"
 )
 
-func createAgentMdFiles(cfg config.ProjectConfig) error {
+func createAgentMdFiles(targetPath string, cfg config.ProjectConfig, fs filesystem.FileSystem) error {
 	fmt.Println("\n📂 Creating AGENT.md files in directory structure...")
 
-	// Get all directories in the current path, up to 3 levels deep
-	dirs, err := findDirectories(".", 3)
+	// Get all directories in the target path, up to 3 levels deep
+	dirs, err := findDirectories(targetPath, 3, fs)
 	if err != nil {
 		return fmt.Errorf("failed to find directories: %w", err)
 	}
@@ -24,7 +25,7 @@ func createAgentMdFiles(cfg config.ProjectConfig) error {
 	}
 
 	for _, dir := range dirs {
-		if err := createAgentMdInDirectory(dir, cfg); err != nil {
+		if err := createAgentMdInDirectory(dir, cfg, fs); err != nil {
 			fmt.Printf("⚠️  Warning: failed to create AGENT.md in %s: %v\n", dir, err)
 		} else {
 			fmt.Printf("  ✓ Created AGENT.md in %s\n", dir)
@@ -34,10 +35,10 @@ func createAgentMdFiles(cfg config.ProjectConfig) error {
 	return nil
 }
 
-func findDirectories(root string, maxDepth int) ([]string, error) {
+func findDirectories(root string, maxDepth int, fs filesystem.FileSystem) ([]string, error) {
 	var dirs []string
 
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+	err := fs.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -69,7 +70,7 @@ func findDirectories(root string, maxDepth int) ([]string, error) {
 	return dirs, err
 }
 
-func createAgentMdInDirectory(dir string, cfg config.ProjectConfig) error {
+func createAgentMdInDirectory(dir string, cfg config.ProjectConfig, fs filesystem.FileSystem) error {
 	dirName := filepath.Base(dir)
 	relPath := dir
 
@@ -119,5 +120,5 @@ Keep inline documentation up-to-date and clear.
 `)
 
 	filePath := filepath.Join(dir, "AGENT.md")
-	return os.WriteFile(filePath, []byte(sb.String()), 0644)
+	return fs.WriteFile(filePath, []byte(sb.String()), 0644)
 }

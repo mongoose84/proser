@@ -2,46 +2,46 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/mongoose84/proser/config"
+	"github.com/mongoose84/proser/filesystem"
 )
 
-func setupGithubFolder(cfg config.ProjectConfig) error {
-	githubDir := ".github"
-	if err := os.MkdirAll(githubDir, 0755); err != nil {
+func setupGithubFolder(targetPath string, cfg config.ProjectConfig, fs filesystem.FileSystem) error {
+	githubDir := filepath.Join(targetPath, ".github")
+	if err := fs.MkdirAll(githubDir, 0755); err != nil {
 		return fmt.Errorf("failed to create .github directory: %w", err)
 	}
 
 	// Create copilot-instructions.md (global rules)
-	if err := createCopilotInstructions(githubDir, cfg); err != nil {
+	if err := createCopilotInstructions(githubDir, cfg, fs); err != nil {
 		return err
 	}
 
 	// Create instructions directory
 	instructionsDir := filepath.Join(githubDir, "instructions")
-	if err := os.MkdirAll(instructionsDir, 0755); err != nil {
+	if err := fs.MkdirAll(instructionsDir, 0755); err != nil {
 		return fmt.Errorf("failed to create instructions directory: %w", err)
 	}
 
 	// Create specific instruction files based on configuration
 	if cfg.HasFrontend() {
-		if err := createFrontendInstructions(instructionsDir, cfg); err != nil {
+		if err := createFrontendInstructions(instructionsDir, cfg, fs); err != nil {
 			return err
 		}
 	}
 
 	if cfg.HasBackend() {
-		if err := createBackendInstructions(instructionsDir, cfg); err != nil {
+		if err := createBackendInstructions(instructionsDir, cfg, fs); err != nil {
 			return err
 		}
 	}
 
 	// Always create testing instructions if we have any technology
 	if cfg.HasFrontend() || cfg.HasBackend() {
-		if err := createTestingInstructions(instructionsDir, cfg); err != nil {
+		if err := createTestingInstructions(instructionsDir, cfg, fs); err != nil {
 			return err
 		}
 	}
@@ -49,7 +49,7 @@ func setupGithubFolder(cfg config.ProjectConfig) error {
 	return nil
 }
 
-func createCopilotInstructions(githubDir string, cfg config.ProjectConfig) error {
+func createCopilotInstructions(githubDir string, cfg config.ProjectConfig, fs filesystem.FileSystem) error {
 	var sb strings.Builder
 
 	sb.WriteString(fmt.Sprintf("# Global Repository Instructions\n\n"))
@@ -127,5 +127,5 @@ func createCopilotInstructions(githubDir string, cfg config.ProjectConfig) error
 	sb.WriteString("- Profile and benchmark critical code paths\n")
 
 	filePath := filepath.Join(githubDir, "copilot-instructions.md")
-	return os.WriteFile(filePath, []byte(sb.String()), 0644)
+	return fs.WriteFile(filePath, []byte(sb.String()), 0644)
 }

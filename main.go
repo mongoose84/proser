@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/mongoose84/proser/config"
+	"github.com/mongoose84/proser/filesystem"
 )
 
 func main() {
@@ -42,16 +43,19 @@ func main() {
 
 	fmt.Printf("📁 Target directory: %s\n\n", absTarget)
 
+	// Create filesystem abstraction
+	fs := filesystem.NewOsFileSystem()
+
 	config := collectUserInput()
 
 	fmt.Println("\n📝 Generating files based on your configuration...")
 
-	if err := setupGithubFolder(absTarget, config); err != nil {
+	if err := setupGithubFolder(absTarget, config, fs); err != nil {
 		fmt.Printf("❌ Error setting up .github folder: %v\n", err)
 		os.Exit(1)
 	}
 
-	if err := createAgentMdFiles(absTarget, config); err != nil {
+	if err := createAgentMdFiles(absTarget, config, fs); err != nil {
 		fmt.Printf("❌ Error creating AGENT.md files: %v\n", err)
 		os.Exit(1)
 	}
