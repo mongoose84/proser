@@ -70,7 +70,11 @@ func collectUserInput() ProjectConfig {
 
 func promptUser(reader *bufio.Reader, prompt, defaultValue string) string {
 	fmt.Printf("%s [%s]: ", prompt, defaultValue)
-	input, _ := reader.ReadString('\n')
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		// In case of read error, return default value
+		return defaultValue
+	}
 	input = strings.TrimSpace(input)
 	if input == "" {
 		return defaultValue
@@ -274,8 +278,8 @@ jobs:
     
     - name: Lint
       run: |
-        go install golang.org/x/lint/golint@latest
-        golint ./...
+        go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+        golangci-lint run ./...
 `
 	case "python":
 		workflowContent = `name: Python CI
@@ -410,7 +414,11 @@ func findDirectories(root string, maxDepth int) ([]string, error) {
 
 		if info.IsDir() && path != root {
 			// Calculate depth
-			relPath, _ := filepath.Rel(root, path)
+			relPath, err := filepath.Rel(root, path)
+			if err != nil {
+				// If we can't determine relative path, skip this directory
+				return filepath.SkipDir
+			}
 			depth := strings.Count(relPath, string(os.PathSeparator)) + 1
 
 			if depth <= maxDepth {
