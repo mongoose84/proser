@@ -1,7 +1,7 @@
 # Agent Instructions for language
 
 ## Directory Context
-This directory is part of the proser project located at: language
+This directory is part of the Proser project located at: language
 
 ## Purpose
 This directory contains code and resources related to: language
@@ -9,7 +9,8 @@ This directory contains code and resources related to: language
 ## Guidelines
 
 ### Code Style
-Standard formatting for Go
+gofmt
+
 
 ## Working in This Directory
 

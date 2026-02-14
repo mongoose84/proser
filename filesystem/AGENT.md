@@ -1,10 +1,10 @@
-# Agent Instructions for input
+# Agent Instructions for filesystem
 
 ## Directory Context
-This directory is part of the Proser project located at: input
+This directory is part of the Proser project located at: filesystem
 
 ## Purpose
-This directory contains code and resources related to: input
+This directory contains code and resources related to: filesystem
 
 ## Guidelines
 

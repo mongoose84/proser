@@ -1,10 +1,10 @@
-# Agent Instructions for input
+# Agent Instructions for config
 
 ## Directory Context
-This directory is part of the Proser project located at: input
+This directory is part of the Proser project located at: config
 
 ## Purpose
-This directory contains code and resources related to: input
+This directory contains code and resources related to: config
 
 ## Guidelines
 
