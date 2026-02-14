@@ -30,12 +30,41 @@ type TestingConfig struct {
 	Strategy  string // Unit, Integration, E2E focus
 }
 
+// ChatModesConfig holds chat mode configuration
+type ChatModesConfig struct {
+	EnableArchitect       bool
+	EnableFrontend        bool
+	EnableBackend         bool
+	EnableCodeReviewer    bool
+	EnableTechnicalWriter bool
+	EnableDevOps          bool
+}
+
+// PromptsConfig holds prompt templates configuration
+type PromptsConfig struct {
+	EnableCodeReview    bool
+	EnableFeatureSpec   bool
+	EnableRefactor      bool
+	EnableBugFix        bool
+	EnablePRDescription bool
+}
+
+// SpecsConfig holds specification templates configuration
+type SpecsConfig struct {
+	EnableFeatureTemplate bool
+	EnableAPIEndpoint     bool
+	EnableComponent       bool
+}
+
 // ProjectConfig is the main configuration structure
 type ProjectConfig struct {
-	General  GeneralConfig
-	Frontend *FrontendConfig // nil if no frontend
-	Backend  *BackendConfig  // nil if no backend
-	Testing  TestingConfig
+	General   GeneralConfig
+	Frontend  *FrontendConfig // nil if no frontend
+	Backend   *BackendConfig  // nil if no backend
+	Testing   TestingConfig
+	ChatModes *ChatModesConfig // nil if no chat modes
+	Prompts   *PromptsConfig   // nil if no prompts
+	Specs     *SpecsConfig     // nil if no specs
 }
 
 // HasFrontend returns true if the project has frontend configuration
@@ -46,4 +75,19 @@ func (c *ProjectConfig) HasFrontend() bool {
 // HasBackend returns true if the project has backend configuration
 func (c *ProjectConfig) HasBackend() bool {
 	return c.Backend != nil
+}
+
+// HasChatModes returns true if the project has chat modes configuration
+func (c *ProjectConfig) HasChatModes() bool {
+	return c.ChatModes != nil
+}
+
+// HasPrompts returns true if the project has prompts configuration
+func (c *ProjectConfig) HasPrompts() bool {
+	return c.Prompts != nil
+}
+
+// HasSpecs returns true if the project has specs configuration
+func (c *ProjectConfig) HasSpecs() bool {
+	return c.Specs != nil
 }

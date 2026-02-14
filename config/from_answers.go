@@ -39,5 +39,43 @@ func FromAnswers(answers map[string]string) ProjectConfig {
 		}
 	}
 
+	// Chat modes config (only if enabled)
+	if shouldEnable(answers["enable_chatmodes"]) {
+		cfg.ChatModes = &ChatModesConfig{
+			EnableArchitect:       shouldEnable(answers["chatmode_architect"]),
+			EnableFrontend:        shouldEnable(answers["chatmode_frontend"]),
+			EnableBackend:         shouldEnable(answers["chatmode_backend"]),
+			EnableCodeReviewer:    shouldEnable(answers["chatmode_code_reviewer"]),
+			EnableTechnicalWriter: shouldEnable(answers["chatmode_technical_writer"]),
+			EnableDevOps:          shouldEnable(answers["chatmode_devops"]),
+		}
+	}
+
+	// Prompts config (only if enabled)
+	if shouldEnable(answers["enable_prompts"]) {
+		cfg.Prompts = &PromptsConfig{
+			EnableCodeReview:    shouldEnable(answers["prompt_code_review"]),
+			EnableFeatureSpec:   shouldEnable(answers["prompt_feature_spec"]),
+			EnableRefactor:      shouldEnable(answers["prompt_refactor"]),
+			EnableBugFix:        shouldEnable(answers["prompt_bug_fix"]),
+			EnablePRDescription: shouldEnable(answers["prompt_pr_description"]),
+		}
+	}
+
+	// Specs config (only if enabled)
+	if shouldEnable(answers["enable_specs"]) {
+		cfg.Specs = &SpecsConfig{
+			EnableFeatureTemplate: shouldEnable(answers["spec_feature_template"]),
+			EnableAPIEndpoint:     shouldEnable(answers["spec_api_endpoint"]),
+			EnableComponent:       shouldEnable(answers["spec_component"]),
+		}
+	}
+
 	return cfg
+}
+
+// shouldEnable returns true if the answer is affirmative
+func shouldEnable(answer string) bool {
+	lower := strings.ToLower(strings.TrimSpace(answer))
+	return lower == "yes" || lower == "y" || lower == "true" || lower == "1"
 }

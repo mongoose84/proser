@@ -39,3 +39,38 @@ func testingQuestions() []input.Question {
 		{Key: "testing_strategy", Prompt: "Testing strategy focus (e.g., Unit tests, Integration tests, E2E, TDD)", DefaultValue: "Unit and Integration tests"},
 	}
 }
+
+// chatModesQuestions returns questions for chat mode configuration
+func chatModesQuestions() []input.Question {
+	return []input.Question{
+		{Key: "enable_chatmodes", Prompt: "Enable chat modes (role-based AI assistants)? (yes/no/skip)", DefaultValue: "yes"},
+		{Key: "chatmode_architect", Prompt: "Enable architect chat mode (planning specialist)?", DefaultValue: "yes"},
+		{Key: "chatmode_frontend", Prompt: "Enable frontend engineer chat mode?", DefaultValue: "yes"},
+		{Key: "chatmode_backend", Prompt: "Enable backend engineer chat mode?", DefaultValue: "yes"},
+		{Key: "chatmode_code_reviewer", Prompt: "Enable code reviewer chat mode?", DefaultValue: "yes"},
+		{Key: "chatmode_technical_writer", Prompt: "Enable technical writer chat mode (documentation)?", DefaultValue: "yes"},
+		{Key: "chatmode_devops", Prompt: "Enable DevOps engineer chat mode (infrastructure)?", DefaultValue: "no"},
+	}
+}
+
+// promptsQuestions returns questions for prompt template configuration
+func promptsQuestions() []input.Question {
+	return []input.Question{
+		{Key: "enable_prompts", Prompt: "Enable prompt templates (reusable workflows)? (yes/no/skip)", DefaultValue: "yes"},
+		{Key: "prompt_code_review", Prompt: "Enable code review prompt template?", DefaultValue: "yes"},
+		{Key: "prompt_feature_spec", Prompt: "Enable feature specification prompt template?", DefaultValue: "yes"},
+		{Key: "prompt_refactor", Prompt: "Enable refactor prompt template?", DefaultValue: "yes"},
+		{Key: "prompt_bug_fix", Prompt: "Enable bug fix prompt template?", DefaultValue: "yes"},
+		{Key: "prompt_pr_description", Prompt: "Enable PR description prompt template?", DefaultValue: "yes"},
+	}
+}
+
+// specsQuestions returns questions for spec template configuration
+func specsQuestions() []input.Question {
+	return []input.Question{
+		{Key: "enable_specs", Prompt: "Enable specification templates (project planning)? (yes/no/skip)", DefaultValue: "yes"},
+		{Key: "spec_feature_template", Prompt: "Enable feature template spec?", DefaultValue: "yes"},
+		{Key: "spec_api_endpoint", Prompt: "Enable API endpoint spec?", DefaultValue: "yes"},
+		{Key: "spec_component", Prompt: "Enable component spec (frontend)?", DefaultValue: "yes"},
+	}
+}

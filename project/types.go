@@ -22,15 +22,20 @@ func (p *FullstackProject) Generators() []generator.Generator {
 		&generator.FrontendInstructionsGenerator{},
 		&generator.BackendInstructionsGenerator{},
 		&generator.TestingInstructionsGenerator{},
+		&generator.ChatModesGenerator{},
+		&generator.PromptsGenerator{},
+		&generator.SpecsGenerator{},
 		&generator.AgentMdGenerator{},
 	}
 }
 
 func (p *FullstackProject) Questions() []input.Question {
-	return append(append(
+	return append(append(append(append(
 		generalQuestions(),
 		frontendQuestions()...),
-		append(backendQuestions(), testingQuestions()...)...,
+		append(backendQuestions(), testingQuestions()...)...),
+		chatModesQuestions()...),
+		append(promptsQuestions(), specsQuestions()...)...,
 	)
 }
 
@@ -50,15 +55,19 @@ func (p *FrontendProject) Generators() []generator.Generator {
 		&generator.CopilotInstructionsGenerator{},
 		&generator.FrontendInstructionsGenerator{},
 		&generator.TestingInstructionsGenerator{},
+		&generator.ChatModesGenerator{},
+		&generator.PromptsGenerator{},
+		&generator.SpecsGenerator{},
 		&generator.AgentMdGenerator{},
 	}
 }
 
 func (p *FrontendProject) Questions() []input.Question {
-	return append(append(
+	return append(append(append(
 		generalQuestions(),
 		frontendQuestions()...),
-		testingQuestions()...,
+		append(testingQuestions(), chatModesQuestions()...)...),
+		append(promptsQuestions(), specsQuestions()...)...,
 	)
 }
 
@@ -78,14 +87,18 @@ func (p *BackendProject) Generators() []generator.Generator {
 		&generator.CopilotInstructionsGenerator{},
 		&generator.BackendInstructionsGenerator{},
 		&generator.TestingInstructionsGenerator{},
+		&generator.ChatModesGenerator{},
+		&generator.PromptsGenerator{},
+		&generator.SpecsGenerator{},
 		&generator.AgentMdGenerator{},
 	}
 }
 
 func (p *BackendProject) Questions() []input.Question {
-	return append(append(
+	return append(append(append(
 		generalQuestions(),
 		backendQuestions()...),
-		testingQuestions()...,
+		append(testingQuestions(), chatModesQuestions()...)...),
+		append(promptsQuestions(), specsQuestions()...)...,
 	)
 }
