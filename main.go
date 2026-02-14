@@ -9,13 +9,13 @@ import (
 )
 
 type ProjectConfig struct {
-	Language      string
-	CodeStyle     string
-	APIRules      string
-	Security      string
-	ProjectName   string
-	Description   string
-	CustomRules   string
+	Language    string
+	CodeStyle   string
+	APIRules    string
+	Security    string
+	ProjectName string
+	Description string
+	CustomRules string
 }
 
 func main() {
@@ -25,9 +25,9 @@ func main() {
 	fmt.Println()
 
 	config := collectUserInput()
-	
+
 	fmt.Println("\n📝 Generating files based on your configuration...")
-	
+
 	if err := setupGithubFolder(config); err != nil {
 		fmt.Printf("❌ Error setting up .github folder: %v\n", err)
 		os.Exit(1)
@@ -61,22 +61,36 @@ func collectUserInput() ProjectConfig {
 
 	fmt.Println("\n📋 Configuration Summary:")
 	fmt.Printf("  Project: %s\n", config.ProjectName)
-	fmt.Printf("  Language: %s\n", config.Language)
-	fmt.Printf("  Code Style: %s\n", config.CodeStyle)
-	fmt.Printf("  API Rules: %s\n", config.APIRules)
-	fmt.Printf("  Security: %s\n", config.Security)
+	if config.Language != "" {
+		fmt.Printf("  Language: %s\n", config.Language)
+	}
+	if config.CodeStyle != "" {
+		fmt.Printf("  Code Style: %s\n", config.CodeStyle)
+	}
+	if config.APIRules != "" {
+		fmt.Printf("  API Rules: %s\n", config.APIRules)
+	}
+	if config.Security != "" {
+		fmt.Printf("  Security: %s\n", config.Security)
+	}
+	if config.CustomRules != "" {
+		fmt.Printf("  Custom Rules: %s\n", config.CustomRules)
+	}
 
 	return config
 }
 
 func promptUser(reader *bufio.Reader, prompt, defaultValue string) string {
-	fmt.Printf("%s [%s]: ", prompt, defaultValue)
+	fmt.Printf("%s [%s] (type 'skip' to omit): ", prompt, defaultValue)
 	input, err := reader.ReadString('\n')
 	if err != nil {
 		// In case of read error, return default value
 		return defaultValue
 	}
 	input = strings.TrimSpace(input)
+	if strings.ToLower(input) == "skip" {
+		return ""
+	}
 	if input == "" {
 		return defaultValue
 	}
@@ -118,91 +132,126 @@ func setupGithubFolder(config ProjectConfig) error {
 }
 
 func createCopilotInstructions(githubDir string, config ProjectConfig) error {
-	content := fmt.Sprintf(`# GitHub Copilot Instructions for %s
+	var sb strings.Builder
 
-## Project Overview
-%s
+	sb.WriteString(fmt.Sprintf("# GitHub Copilot Instructions for %s\n\n", config.ProjectName))
 
-## Programming Language
-%s
+	if config.Description != "" {
+		sb.WriteString("## Project Overview\n")
+		sb.WriteString(config.Description + "\n\n")
+	}
 
-## Code Style Guidelines
-%s
+	if config.Language != "" {
+		sb.WriteString("## Programming Language\n")
+		sb.WriteString(config.Language + "\n\n")
+	}
 
-## API Design Rules
-%s
+	if config.CodeStyle != "" {
+		sb.WriteString("## Code Style Guidelines\n")
+		sb.WriteString(config.CodeStyle + "\n\n")
+	}
 
-## Security Requirements
-%s
+	if config.APIRules != "" {
+		sb.WriteString("## API Design Rules\n")
+		sb.WriteString(config.APIRules + "\n\n")
+	}
 
-## Additional Guidelines
-%s
+	if config.Security != "" {
+		sb.WriteString("## Security Requirements\n")
+		sb.WriteString(config.Security + "\n\n")
+	}
 
-## General Instructions for AI Assistants
+	if config.CustomRules != "" {
+		sb.WriteString("## Additional Guidelines\n")
+		sb.WriteString(config.CustomRules + "\n\n")
+	}
 
-When working on this project, please:
+	sb.WriteString("## General Instructions for AI Assistants\n\n")
+	sb.WriteString("When working on this project, please:\n\n")
 
-1. **Follow Language Best Practices**: Write idiomatic %s code following community standards
-2. **Maintain Code Style**: Adhere to the specified code style guidelines: %s
-3. **API Consistency**: Follow these API rules: %s
-4. **Security First**: Always consider security implications: %s
-5. **Documentation**: Keep documentation up-to-date with code changes
-6. **Testing**: Write tests for new functionality and bug fixes
-7. **Error Handling**: Implement proper error handling and logging
-8. **Performance**: Consider performance implications of changes
+	i := 1
+	if config.Language != "" {
+		sb.WriteString(fmt.Sprintf("%d. **Follow Language Best Practices**: Write idiomatic %s code following community standards\n", i, config.Language))
+		i++
+	}
+	if config.CodeStyle != "" {
+		sb.WriteString(fmt.Sprintf("%d. **Maintain Code Style**: Adhere to the specified code style guidelines: %s\n", i, config.CodeStyle))
+		i++
+	}
+	if config.APIRules != "" {
+		sb.WriteString(fmt.Sprintf("%d. **API Consistency**: Follow these API rules: %s\n", i, config.APIRules))
+		i++
+	}
+	if config.Security != "" {
+		sb.WriteString(fmt.Sprintf("%d. **Security First**: Always consider security implications: %s\n", i, config.Security))
+		i++
+	}
+	sb.WriteString(fmt.Sprintf("%d. **Documentation**: Keep documentation up-to-date with code changes\n", i))
+	i++
+	sb.WriteString(fmt.Sprintf("%d. **Testing**: Write tests for new functionality and bug fixes\n", i))
+	i++
+	sb.WriteString(fmt.Sprintf("%d. **Error Handling**: Implement proper error handling and logging\n", i))
+	i++
+	sb.WriteString(fmt.Sprintf("%d. **Performance**: Consider performance implications of changes\n", i))
 
-## Code Review Checklist
-
-Before submitting changes, ensure:
-- [ ] Code follows style guidelines
-- [ ] Security requirements are met
-- [ ] API changes are documented
-- [ ] Tests are included and passing
-- [ ] Error handling is appropriate
-- [ ] Documentation is updated
-`, 
-		config.ProjectName,
-		config.Description,
-		config.Language,
-		config.CodeStyle,
-		config.APIRules,
-		config.Security,
-		config.CustomRules,
-		config.Language,
-		config.CodeStyle,
-		config.APIRules,
-		config.Security,
-	)
+	sb.WriteString("\n## Code Review Checklist\n\n")
+	sb.WriteString("Before submitting changes, ensure:\n")
+	if config.CodeStyle != "" {
+		sb.WriteString("- [ ] Code follows style guidelines\n")
+	}
+	if config.Security != "" {
+		sb.WriteString("- [ ] Security requirements are met\n")
+	}
+	if config.APIRules != "" {
+		sb.WriteString("- [ ] API changes are documented\n")
+	}
+	sb.WriteString("- [ ] Tests are included and passing\n")
+	sb.WriteString("- [ ] Error handling is appropriate\n")
+	sb.WriteString("- [ ] Documentation is updated\n")
 
 	filePath := filepath.Join(githubDir, "copilot-instructions.md")
-	return os.WriteFile(filePath, []byte(content), 0644)
+	return os.WriteFile(filePath, []byte(sb.String()), 0644)
 }
 
 func createAgentInstructions(agentsDir string, config ProjectConfig) error {
-	// Create a general agent instruction file
-	content := fmt.Sprintf(`# Agent Instructions for %s
+	var sb strings.Builder
 
-## Context
-This is a %s project with specific guidelines that all agents should follow.
+	sb.WriteString(fmt.Sprintf("# Agent Instructions for %s\n\n", config.ProjectName))
+	sb.WriteString("## Context\n")
+	if config.Language != "" {
+		sb.WriteString(fmt.Sprintf("This is a %s project with specific guidelines that all agents should follow.\n\n", config.Language))
+	} else {
+		sb.WriteString("This project has specific guidelines that all agents should follow.\n\n")
+	}
 
-## Project Configuration
+	sb.WriteString("## Project Configuration\n\n")
 
-### Language: %s
-All code should be written in %s following best practices for this language.
+	if config.Language != "" {
+		sb.WriteString(fmt.Sprintf("### Language: %s\n", config.Language))
+		sb.WriteString(fmt.Sprintf("All code should be written in %s following best practices for this language.\n\n", config.Language))
+	}
 
-### Code Style
-%s
+	if config.CodeStyle != "" {
+		sb.WriteString("### Code Style\n")
+		sb.WriteString(config.CodeStyle + "\n\n")
+	}
 
-### API Design
-%s
+	if config.APIRules != "" {
+		sb.WriteString("### API Design\n")
+		sb.WriteString(config.APIRules + "\n\n")
+	}
 
-### Security
-%s
+	if config.Security != "" {
+		sb.WriteString("### Security\n")
+		sb.WriteString(config.Security + "\n\n")
+	}
 
-### Custom Rules
-%s
+	if config.CustomRules != "" {
+		sb.WriteString("### Custom Rules\n")
+		sb.WriteString(config.CustomRules + "\n\n")
+	}
 
-## Agent Responsibilities
+	sb.WriteString(`## Agent Responsibilities
 
 ### Code Generation
 - Generate code that follows the language and style guidelines
@@ -231,19 +280,10 @@ All code should be written in %s following best practices for this language.
 - Explain technical decisions
 - Highlight security considerations
 - Suggest improvements when appropriate
-`,
-		config.ProjectName,
-		config.Language,
-		config.Language,
-		config.Language,
-		config.CodeStyle,
-		config.APIRules,
-		config.Security,
-		config.CustomRules,
-	)
+`)
 
 	filePath := filepath.Join(agentsDir, "general-instructions.md")
-	return os.WriteFile(filePath, []byte(content), 0644)
+	return os.WriteFile(filePath, []byte(sb.String()), 0644)
 }
 
 func createExampleWorkflow(workflowsDir string, config ProjectConfig) error {
@@ -379,14 +419,8 @@ func createAgentMdFiles(config ProjectConfig) error {
 	}
 
 	if len(dirs) == 0 {
-		fmt.Println("ℹ️  No subdirectories found. Creating sample directory structure...")
-		sampleDirs := []string{"src", "src/core", "src/core/api", "src/core/api/handlers"}
-		for _, dir := range sampleDirs {
-			if err := os.MkdirAll(dir, 0755); err != nil {
-				return fmt.Errorf("failed to create sample directory %s: %w", dir, err)
-			}
-		}
-		dirs = sampleDirs
+		fmt.Println("ℹ️  No subdirectories found. Skipping AGENT.md creation.")
+		return nil
 	}
 
 	for _, dir := range dirs {
@@ -439,29 +473,37 @@ func createAgentMdInDirectory(dir string, config ProjectConfig) error {
 	dirName := filepath.Base(dir)
 	relPath := dir
 
-	content := fmt.Sprintf(`# Agent Instructions for %s
+	var sb strings.Builder
 
-## Directory Context
-This directory is part of the %s project located at: %s
+	sb.WriteString(fmt.Sprintf("# Agent Instructions for %s\n\n", dirName))
+	sb.WriteString("## Directory Context\n")
+	sb.WriteString(fmt.Sprintf("This directory is part of the %s project located at: %s\n\n", config.ProjectName, relPath))
+	sb.WriteString("## Purpose\n")
+	sb.WriteString(fmt.Sprintf("This directory contains code and resources related to: %s\n\n", dirName))
 
-## Purpose
-This directory contains code and resources related to: %s
+	sb.WriteString("## Guidelines\n\n")
 
-## Guidelines
+	if config.CodeStyle != "" {
+		sb.WriteString("### Code Style\n")
+		sb.WriteString(config.CodeStyle + "\n\n")
+	}
 
-### Code Style
-%s
+	if config.Language != "" {
+		sb.WriteString("### Language\n")
+		sb.WriteString(fmt.Sprintf("All code in this directory should be written in %s.\n\n", config.Language))
+	}
 
-### Language
-All code in this directory should be written in %s.
+	if config.APIRules != "" {
+		sb.WriteString("### API Rules\n")
+		sb.WriteString(config.APIRules + "\n\n")
+	}
 
-### API Rules
-%s
+	if config.Security != "" {
+		sb.WriteString("### Security\n")
+		sb.WriteString(config.Security + "\n\n")
+	}
 
-### Security
-%s
-
-## Working in This Directory
+	sb.WriteString(`## Working in This Directory
 
 When making changes in this directory:
 
@@ -479,17 +521,8 @@ When making changes in this directory:
 
 ## Documentation
 Keep inline documentation up-to-date and clear.
-`,
-		dirName,
-		config.ProjectName,
-		relPath,
-		dirName,
-		config.CodeStyle,
-		config.Language,
-		config.APIRules,
-		config.Security,
-	)
+`)
 
 	filePath := filepath.Join(dir, "AGENT.md")
-	return os.WriteFile(filePath, []byte(content), 0644)
+	return os.WriteFile(filePath, []byte(sb.String()), 0644)
 }
