@@ -151,10 +151,13 @@ func createCopilotInstructions(githubDir string, config ProjectConfig) error {
 		sb.WriteString(config.Security + "\n\n")
 	}
 
-	if config.CustomRules != "" {
-		sb.WriteString("## Additional Guidelines\n")
-		sb.WriteString(config.CustomRules + "\n\n")
-	}
+	sb.WriteString("\n## PROSE Principles\n")
+	sb.WriteString("When operating within this project, adhere to these core PROSE principles:\n")
+	sb.WriteString("- **Progressive Disclosure**: Structure information to reveal complexity progressively for efficient context utilization.\n")
+	sb.WriteString("- **Reduced Scope**: Match task size to context capacity to manage complexity.\n")
+	sb.WriteString("- **Orchestrated Composition**: Favor simple, composable components over complex, collapsed structures.\n")
+	sb.WriteString("- **Safety Boundaries**: Maintain autonomy within established guardrails for reliability and security.\n")
+	sb.WriteString("- **Explicit Hierarchy**: Increase specificity as scope narrows to support modularity and inheritance.\n\n")
 
 	sb.WriteString("## General Instructions for AI Assistants\n\n")
 	sb.WriteString("When working on this project, please:\n\n")
@@ -240,6 +243,14 @@ func createAgentInstructions(agentsDir string, config ProjectConfig) error {
 		sb.WriteString("### Custom Rules\n")
 		sb.WriteString(config.CustomRules + "\n\n")
 	}
+
+	sb.WriteString("## PROSE Operational Principles\n")
+	sb.WriteString("Agents must operate according to the following principles:\n")
+	sb.WriteString("1. **Progressive Disclosure**: Information should be structured to reveal complexity only as needed.\n")
+	sb.WriteString("2. **Reduced Scope**: Align task breadth with the current context capacity.\n")
+	sb.WriteString("3. **Orchestrated Composition**: Build complex systems by composing simple, well-defined components.\n")
+	sb.WriteString("4. **Safety Boundaries**: Exercise autonomy strictly within the project's security and logic guardrails.\n")
+	sb.WriteString("5. **Explicit Hierarchy**: Honor the specific rules of the current directory over general project rules.\n\n")
 
 	sb.WriteString(`## Agent Responsibilities
 
