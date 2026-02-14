@@ -14,7 +14,7 @@ import (
 
 func main() {
 	fmt.Println("===========================================")
-	fmt.Println("PROSER - PROSE Framework Setup Tool")
+	fmt.Println("PROSER - PROSE File Setup Tool")
 	fmt.Println("===========================================")
 	fmt.Println()
 
@@ -96,7 +96,7 @@ func main() {
 	fmt.Println("\n✅ Setup complete!")
 	fmt.Println("📁 Files created in .github/")
 	fmt.Println("📄 AGENT.md files created in subdirectories")
-	fmt.Println("\n🎉 Your project is now configured for PROSE framework!")
+	fmt.Println("\n🎉 Your project is now configured for PROSE Architectural Style for AI-Native Development!")
 }
 
 // selectProjectType prompts the user to select a project type
@@ -183,7 +183,7 @@ func printHelp() {
 	fmt.Println("  -h, --help     Show this help message")
 	fmt.Println()
 	fmt.Println("Description:")
-	fmt.Println("  PROSER generates GitHub Copilot PROSE framework files for your project.")
+	fmt.Println("  PROSER generates GitHub Copilot PROSE files for your project.")
 	fmt.Println("  It creates .github/copilot-instructions.md, .instructions.md files,")
 	fmt.Println("  and AGENT.md files in subdirectories based on your project configuration.")
 	fmt.Println()

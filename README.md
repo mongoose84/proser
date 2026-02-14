@@ -2,11 +2,11 @@
 
 **PRO**SE framework **SE**tup and **R**esource generator
 
-Automate setting up GitHub Copilot PROSE framework files for your projects with interactive configuration.
+Automate setting up GitHub Copilot PROSE files for your projects with interactive configuration.
 
 ## What is PROSER?
 
-PROSER is a command-line tool that helps you set up GitHub Copilot Workspace (PROSE framework) configuration files for your projects. It interactively collects information about your project and generates customized configuration files tailored to your technology stack and requirements.
+PROSER is a command-line tool that helps you set up GitHub Copilot Workspace (Based on this brilliant documentation: https://danielmeppiel.github.io/awesome-ai-native/docs/prose/) It interactively collects information about your project and generates customized configuration files tailored to your technology stack and requirements.
 
 ## Features
 
@@ -111,7 +111,7 @@ PROSER creates the following files:
 ```bash
 $ proser
 ===========================================
-PROSER - PROSE Framework Setup Tool
+PROSER - PROSE File Setup Tool
 ===========================================
 
 📁 Target directory: /home/user/awesome-api
@@ -157,7 +157,7 @@ Testing strategy focus [Unit and Integration tests]: Table-driven unit tests and
 📁 Files created in .github/
 📄 AGENT.md files created in subdirectories
 
-🎉 Your project is now configured for PROSE framework!
+🎉 Your project is now configured for PROSE Architectural Style for AI-Native Development!
 ```
 
 ## Supported Languages and Frameworks
@@ -278,7 +278,7 @@ MIT License - See LICENSE file for details
 
 ## Credits
 
-Inspired by the GitHub Copilot Workspace PROSE framework.
+Inspired by the GitHub Copilot Workspace PROSE Architectural Style for AI-Native Development described here: https://danielmeppiel.github.io/awesome-ai-native/docs/prose/
 
 ## Generated Files
 
