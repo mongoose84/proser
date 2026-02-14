@@ -9,6 +9,7 @@ import (
 
 	"github.com/mongoose84/proser/config"
 	"github.com/mongoose84/proser/filesystem"
+	"github.com/mongoose84/proser/generator"
 )
 
 func main() {
@@ -50,14 +51,31 @@ func main() {
 
 	fmt.Println("\n📝 Generating files based on your configuration...")
 
-	if err := setupGithubFolder(absTarget, config, fs); err != nil {
-		fmt.Printf("❌ Error setting up .github folder: %v\n", err)
-		os.Exit(1)
+	// Create generation context
+	ctx := generator.GenerateContext{
+		Config:     config,
+		TargetPath: absTarget,
+		FS:         fs,
 	}
 
-	if err := createAgentMdFiles(absTarget, config, fs); err != nil {
-		fmt.Printf("❌ Error creating AGENT.md files: %v\n", err)
-		os.Exit(1)
+	// Create writer
+	writer := generator.NewWriter(fs)
+
+	// Run all generators
+	generators := []generator.Generator{
+		&generator.CopilotInstructionsGenerator{},
+		&generator.FrontendInstructionsGenerator{},
+		&generator.BackendInstructionsGenerator{},
+		&generator.TestingInstructionsGenerator{},
+		&generator.AgentMdGenerator{},
+	}
+
+	for _, gen := range generators {
+		if err := writer.RunGenerator(gen, ctx); err != nil {
+			fmt.Printf("❌ Error running generator %s: %v\n", gen.Name(), err)
+			os.Exit(1)
+		}
+		fmt.Printf("  ✓ Generated %s files\n", gen.Name())
 	}
 
 	fmt.Println("\n✅ Setup complete!")
