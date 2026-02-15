@@ -95,8 +95,9 @@ func main() {
 
 	fmt.Println("\n✅ Setup complete!")
 	fmt.Println("📁 Files created in .github/")
-	fmt.Println("📄 AGENT.md files created in subdirectories")
+	fmt.Println("📄 AGENTS.md created at project root")
 	fmt.Println("\n🎉 Your project is now configured for PROSE Architectural Style for AI-Native Development!")
+	fmt.Println("💡 Ask your AI agent to expand AGENTS.md with project-specific details.")
 }
 
 // selectProjectType prompts the user to select a project type
@@ -185,7 +186,7 @@ func printHelp() {
 	fmt.Println("Description:")
 	fmt.Println("  PROSER generates GitHub Copilot PROSE files for your project.")
 	fmt.Println("  It creates .github/copilot-instructions.md, .instructions.md files,")
-	fmt.Println("  and AGENT.md files in subdirectories based on your project configuration.")
+	fmt.Println("  and an AGENTS.md file at the project root based on your configuration.")
 	fmt.Println()
 	fmt.Println("Examples:")
 	fmt.Println("  proser                    # Setup in current directory")
