@@ -25,7 +25,7 @@ func (p *FullstackProject) Generators() []generator.Generator {
 		&generator.ChatModesGenerator{},
 		&generator.PromptsGenerator{},
 		&generator.SpecsGenerator{},
-		&generator.AgentMdGenerator{},
+		&generator.AgentsMdGenerator{},
 	}
 }
 
@@ -58,7 +58,7 @@ func (p *FrontendProject) Generators() []generator.Generator {
 		&generator.ChatModesGenerator{},
 		&generator.PromptsGenerator{},
 		&generator.SpecsGenerator{},
-		&generator.AgentMdGenerator{},
+		&generator.AgentsMdGenerator{},
 	}
 }
 
@@ -90,7 +90,7 @@ func (p *BackendProject) Generators() []generator.Generator {
 		&generator.ChatModesGenerator{},
 		&generator.PromptsGenerator{},
 		&generator.SpecsGenerator{},
-		&generator.AgentMdGenerator{},
+		&generator.AgentsMdGenerator{},
 	}
 }
 
