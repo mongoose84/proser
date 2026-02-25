@@ -48,6 +48,7 @@ func FromAnswers(answers map[string]string) ProjectConfig {
 			EnableCodeReviewer:    shouldEnable(answers["agent_code_reviewer"]),
 			EnableTechnicalWriter: shouldEnable(answers["agent_technical_writer"]),
 			EnableDevOps:          shouldEnable(answers["agent_devops"]),
+			EnableTester:          shouldEnable(answers["agent_tester"]),
 		}
 	}
 

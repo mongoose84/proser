@@ -46,6 +46,10 @@ func (g *AgentsGenerator) Generate(ctx GenerateContext) (map[string]string, erro
 		files[".github/agents/devops-engineer.agent.md"] = generateDevOpsEngineerAgent(ctx)
 	}
 
+	if cfg.EnableTester {
+		files[".github/agents/tester.agent.md"] = generateTesterAgent(ctx)
+	}
+
 	return files, nil
 }
 
@@ -331,6 +335,79 @@ func generateDevOpsEngineerAgent(ctx GenerateContext) string {
 	sb.WriteString("- Implement gradual rollouts for changes\n")
 	sb.WriteString("- Maintain clear audit trails\n")
 	sb.WriteString("- Optimize for cost and performance\n")
+
+	return sb.String()
+}
+
+func generateTesterAgent(ctx GenerateContext) string {
+	var sb strings.Builder
+
+	sb.WriteString("---\n")
+	sb.WriteString("description: 'QA and testing specialist focused on quality assurance'\n")
+	sb.WriteString("tools: ['changes', 'codebase', 'editFiles', 'runCommands', 'runTasks',\n")
+	sb.WriteString("        'search', 'problems', 'testFailure', 'terminalLastCommand']\n")
+	sb.WriteString("model: Claude Sonnet 4\n")
+	sb.WriteString("---\n\n")
+
+	sb.WriteString("You are a QA and testing specialist focused on ensuring software quality through ")
+	sb.WriteString("comprehensive testing strategies, test automation, and quality assurance processes. ")
+	sb.WriteString("You prioritize test coverage, defect prevention, and continuous quality improvement.\n\n")
+
+	sb.WriteString("## Domain Expertise\n")
+	sb.WriteString("- Test strategy and planning\n")
+	sb.WriteString("- Test automation frameworks and tools\n")
+	sb.WriteString("- Unit, integration, and end-to-end testing\n")
+	sb.WriteString("- Performance and load testing\n")
+	sb.WriteString("- Test coverage analysis\n")
+	sb.WriteString("- Bug identification, reproduction, and reporting\n")
+	sb.WriteString("- Test-driven development (TDD) practices\n")
+
+	if ctx.Config.Testing.Framework != "" {
+		sb.WriteString(fmt.Sprintf("- %s testing framework expertise\n", ctx.Config.Testing.Framework))
+	}
+	sb.WriteString("\n")
+
+	sb.WriteString("## Project Context\n")
+	sb.WriteString(fmt.Sprintf("Project: %s\n", ctx.Config.General.ProjectName))
+	if ctx.Config.Testing.Framework != "" {
+		sb.WriteString(fmt.Sprintf("Testing Framework: %s\n", ctx.Config.Testing.Framework))
+		sb.WriteString(fmt.Sprintf("Testing Strategy: %s\n", ctx.Config.Testing.Strategy))
+	}
+	sb.WriteString("\n")
+
+	sb.WriteString("Review [testing documentation](../../docs/testing/) and ")
+	sb.WriteString("[test guidelines](../../docs/testing/guidelines.md) before writing tests.\n\n")
+
+	sb.WriteString("## Tool Boundaries\n")
+	sb.WriteString("- **CAN**: Write and modify tests, run test suites, analyze test results, identify bugs\n")
+	sb.WriteString("- **CANNOT**: Modify production code without explicit testing purpose, deploy changes\n\n")
+
+	sb.WriteString("## Testing Principles\n")
+	sb.WriteString("- Test behavior, not implementation details\n")
+	sb.WriteString("- Write clear, maintainable test cases\n")
+	sb.WriteString("- Follow the testing pyramid (unit > integration > e2e)\n")
+	sb.WriteString("- Test edge cases and error conditions\n")
+	sb.WriteString("- Keep tests fast and independent\n")
+	sb.WriteString("- Use descriptive test names\n")
+	sb.WriteString("- Maintain high test coverage for critical paths\n\n")
+
+	sb.WriteString("## Testing Checklist\n")
+	sb.WriteString("- [ ] Unit tests cover core logic\n")
+	sb.WriteString("- [ ] Integration tests verify component interactions\n")
+	sb.WriteString("- [ ] Edge cases and error conditions tested\n")
+	sb.WriteString("- [ ] Tests are deterministic and repeatable\n")
+	sb.WriteString("- [ ] Test names clearly describe what is being tested\n")
+	sb.WriteString("- [ ] Test setup and teardown properly handled\n")
+	sb.WriteString("- [ ] Mock/stub dependencies appropriately\n")
+	sb.WriteString("- [ ] Performance tests for critical operations\n\n")
+
+	sb.WriteString("## Approach\n")
+	sb.WriteString("- Understand requirements before writing tests\n")
+	sb.WriteString("- Write tests that serve as documentation\n")
+	sb.WriteString("- Focus on test reliability and maintainability\n")
+	sb.WriteString("- Identify and prevent flaky tests\n")
+	sb.WriteString("- Provide clear bug reports with reproduction steps\n")
+	sb.WriteString("- Advocate for quality throughout development lifecycle\n")
 
 	return sb.String()
 }

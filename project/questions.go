@@ -50,6 +50,7 @@ func agentsQuestions() []input.Question {
 		{Key: "agent_code_reviewer", Prompt: "Enable code reviewer agent?", DefaultValue: "yes"},
 		{Key: "agent_technical_writer", Prompt: "Enable technical writer agent (documentation)?", DefaultValue: "yes"},
 		{Key: "agent_devops", Prompt: "Enable DevOps engineer agent (infrastructure)?", DefaultValue: "no"},
+		{Key: "agent_tester", Prompt: "Enable tester agent (QA specialist)?", DefaultValue: "yes"},
 	}
 }
 

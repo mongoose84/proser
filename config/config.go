@@ -38,6 +38,7 @@ type AgentsConfig struct {
 	EnableCodeReviewer    bool
 	EnableTechnicalWriter bool
 	EnableDevOps          bool
+	EnableTester          bool
 }
 
 // PromptsConfig holds prompt templates configuration
