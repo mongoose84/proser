@@ -28,6 +28,8 @@ func (g *TestingInstructionsGenerator) Generate(ctx GenerateContext) (map[string
 	sb.WriteString("---\n")
 	sb.WriteString("# Testing Guidelines\n\n")
 
+	sb.WriteString("Inherits from [global instructions](../copilot-instructions.md).\n\n")
+
 	// --- Context Loading ---
 	sb.WriteString("## Context Loading\n")
 	sb.WriteString("Review [project conventions](../../README.md) and\n")

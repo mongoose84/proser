@@ -39,15 +39,16 @@ func FromAnswers(answers map[string]string) ProjectConfig {
 		}
 	}
 
-	// Chat modes config (only if enabled)
-	if shouldEnable(answers["enable_chatmodes"]) {
-		cfg.ChatModes = &ChatModesConfig{
-			EnableArchitect:       shouldEnable(answers["chatmode_architect"]),
-			EnableFrontend:        shouldEnable(answers["chatmode_frontend"]),
-			EnableBackend:         shouldEnable(answers["chatmode_backend"]),
-			EnableCodeReviewer:    shouldEnable(answers["chatmode_code_reviewer"]),
-			EnableTechnicalWriter: shouldEnable(answers["chatmode_technical_writer"]),
-			EnableDevOps:          shouldEnable(answers["chatmode_devops"]),
+	// Agents config (only if enabled)
+	if shouldEnable(answers["enable_agents"]) {
+		cfg.Agents = &AgentsConfig{
+			EnableArchitect:       shouldEnable(answers["agent_architect"]),
+			EnableFrontend:        shouldEnable(answers["agent_frontend"]),
+			EnableBackend:         shouldEnable(answers["agent_backend"]),
+			EnableCodeReviewer:    shouldEnable(answers["agent_code_reviewer"]),
+			EnableTechnicalWriter: shouldEnable(answers["agent_technical_writer"]),
+			EnableDevOps:          shouldEnable(answers["agent_devops"]),
+			EnableTester:          shouldEnable(answers["agent_tester"]),
 		}
 	}
 

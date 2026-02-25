@@ -49,22 +49,28 @@ func generateCodeReviewPrompt(ctx GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
-	sb.WriteString("mode: agent\n")
+	sb.WriteString("agent: agent\n")
 	sb.WriteString("model: gpt-4\n")
 	sb.WriteString("tools: ['file-search', 'semantic-search', 'changes', 'problems']\n")
 	sb.WriteString("description: 'Structured code review workflow with validation gates'\n")
 	sb.WriteString("---\n")
 	sb.WriteString("# Code Review Workflow\n\n")
 
-	sb.WriteString("## Context Loading Phase\n")
-	sb.WriteString("1. Review [project guidelines](../../docs/standards/)\n")
-	sb.WriteString("2. Check [changed files](changes) in current PR\n")
-	sb.WriteString("3. Analyze [existing issues](problems) and warnings\n")
+	sb.WriteString("## Context Loading\n")
+	sb.WriteString("1. Review [global instructions](../../.github/copilot-instructions.md)\n")
+	if ctx.Config.HasBackend() {
+		sb.WriteString("2. Review [backend instructions](../../.github/instructions/backend.instructions.md)\n")
+	}
+	if ctx.Config.HasFrontend() {
+		sb.WriteString("2. Review [frontend instructions](../../.github/instructions/frontend.instructions.md)\n")
+	}
+	sb.WriteString("3. Check changed files and context\n")
+	sb.WriteString("4. Analyze existing issues and warnings\n")
 	if ctx.Config.General.CodeStyle != "" {
-		sb.WriteString(fmt.Sprintf("4. Verify adherence to: %s\n", ctx.Config.General.CodeStyle))
+		sb.WriteString(fmt.Sprintf("5. Verify adherence to: %s\n", ctx.Config.General.CodeStyle))
 	}
 	if ctx.Config.General.Security != "" {
-		sb.WriteString(fmt.Sprintf("5. Check security requirements: %s\n", ctx.Config.General.Security))
+		sb.WriteString(fmt.Sprintf("6. Check security requirements: %s\n", ctx.Config.General.Security))
 	}
 	sb.WriteString("\n")
 
@@ -101,11 +107,12 @@ func generateCodeReviewPrompt(ctx GenerateContext) string {
 	sb.WriteString("- [ ] No N+1 query problems\n")
 	sb.WriteString("- [ ] Resource cleanup (connections, files) is handled\n\n")
 
-	sb.WriteString("## Deterministic Execution\n")
-	sb.WriteString("Use semantic search to find similar patterns: `semantic-search \"<pattern>\"`\n")
-	sb.WriteString("Use file search to locate related files: `file-search \"**/*.test.*\"`\n\n")
+	sb.WriteString("## Deterministic Requirements\n")
+	sb.WriteString("- Search codebase for similar patterns\n")
+	sb.WriteString("- Locate related test files\n")
+	sb.WriteString("- Check for consistent patterns across the project\n\n")
 
-	sb.WriteString("## Structured Output Requirements\n")
+	sb.WriteString("## Structured Output\n")
 	sb.WriteString("Provide review feedback in the following format:\n\n")
 	sb.WriteString("### Summary\n")
 	sb.WriteString("[High-level assessment of the changes]\n\n")
@@ -127,18 +134,26 @@ func generateFeatureSpecPrompt(ctx GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
-	sb.WriteString("mode: agent\n")
+	sb.WriteString("agent: agent\n")
 	sb.WriteString("model: gpt-4\n")
 	sb.WriteString("tools: ['file-search', 'semantic-search', 'codebase']\n")
 	sb.WriteString("description: 'Feature implementation workflow with specification-first approach'\n")
 	sb.WriteString("---\n")
 	sb.WriteString("# Feature Implementation from Specification\n\n")
 
-	sb.WriteString("## Context Loading Phase\n")
-	sb.WriteString("1. Review [project specification](${specFile})\n")
-	sb.WriteString("2. Analyze [existing codebase patterns](../../src/)\n")
-	sb.WriteString("3. Check [API documentation](../../docs/api/)\n")
-	sb.WriteString("4. Review [architecture guidelines](../../docs/architecture/)\n\n")
+	sb.WriteString("## Context Loading\n")
+	sb.WriteString("1. Review feature specification\n")
+	sb.WriteString("2. Analyze existing codebase patterns\n")
+	if ctx.Config.HasBackend() {
+		sb.WriteString("3. Review [backend instructions](../../.github/instructions/backend.instructions.md)\n")
+	}
+	if ctx.Config.HasFrontend() {
+		sb.WriteString("3. Review [frontend instructions](../../.github/instructions/frontend.instructions.md)\n")
+	}
+	if ctx.Config.Testing.Framework != "" {
+		sb.WriteString("4. Review [testing instructions](../../.github/instructions/testing.instructions.md)\n")
+	}
+	sb.WriteString("\n")
 
 	sb.WriteString("## Planning Phase\n")
 	sb.WriteString("### Requirements Analysis\n")
@@ -154,11 +169,10 @@ func generateFeatureSpecPrompt(ctx GenerateContext) string {
 	sb.WriteString("- [ ] Consider error handling\n")
 	sb.WriteString("- [ ] Plan for testing\n\n")
 
-	sb.WriteString("## Deterministic Execution\n")
-	sb.WriteString("Use semantic search to find similar implementations:\n")
-	sb.WriteString("`semantic-search \"similar feature implementation\"`\n\n")
-	sb.WriteString("Use file search to locate test patterns:\n")
-	sb.WriteString("`file-search \"**/*.test.{js,ts,go,py}\"`\n\n")
+	sb.WriteString("## Deterministic Requirements\n")
+	sb.WriteString("- Search for similar implementations in codebase\n")
+	sb.WriteString("- Locate existing test patterns to follow\n")
+	sb.WriteString("- Identify reusable components or utilities\n\n")
 
 	sb.WriteString("## Implementation Checklist\n")
 	if ctx.Config.HasBackend() {
@@ -191,7 +205,7 @@ func generateFeatureSpecPrompt(ctx GenerateContext) string {
 	sb.WriteString("- [ ] Update README if needed\n")
 	sb.WriteString("- [ ] Add usage examples\n\n")
 
-	sb.WriteString("## Structured Output Requirements\n")
+	sb.WriteString("## Structured Output\n")
 	sb.WriteString("Generate implementation with:\n")
 	sb.WriteString("1. Feature code in appropriate module\n")
 	sb.WriteString("2. Comprehensive unit tests\n")
@@ -205,22 +219,22 @@ func generateFeatureSpecPrompt(ctx GenerateContext) string {
 	return sb.String()
 }
 
-func generateRefactorPrompt(ctx GenerateContext) string {
+func generateRefactorPrompt(_ GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
-	sb.WriteString("mode: agent\n")
+	sb.WriteString("agent: agent\n")
 	sb.WriteString("model: gpt-4\n")
 	sb.WriteString("tools: ['file-search', 'semantic-search', 'codebase', 'editFiles', 'runTests']\n")
 	sb.WriteString("description: 'Code refactoring workflow with safety checks'\n")
 	sb.WriteString("---\n")
 	sb.WriteString("# Code Refactoring Workflow\n\n")
 
-	sb.WriteString("## Context Loading Phase\n")
-	sb.WriteString("1. Review [target code](${targetFile})\n")
-	sb.WriteString("2. Identify all [usages](semantic-search \"function_name\")\n")
-	sb.WriteString("3. Check [test coverage](${testFiles})\n")
-	sb.WriteString("4. Review [related documentation](../../docs/)\n\n")
+	sb.WriteString("## Context Loading\n")
+	sb.WriteString("1. Review target code and understand current implementation\n")
+	sb.WriteString("2. Identify all usages across the codebase\n")
+	sb.WriteString("3. Check test coverage\n")
+	sb.WriteString("4. Review [testing instructions](../../.github/instructions/testing.instructions.md)\n\n")
 
 	sb.WriteString("## Refactoring Planning\n")
 	sb.WriteString("### Analysis\n")
@@ -276,7 +290,7 @@ func generateRefactorPrompt(ctx GenerateContext) string {
 	return sb.String()
 }
 
-func generateBugFixPrompt(ctx GenerateContext) string {
+func generateBugFixPrompt(_ GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
@@ -287,11 +301,11 @@ func generateBugFixPrompt(ctx GenerateContext) string {
 	sb.WriteString("---\n")
 	sb.WriteString("# Bug Fix Workflow\n\n")
 
-	sb.WriteString("## Context Loading Phase\n")
-	sb.WriteString("1. Review [bug report](${issueLink})\n")
-	sb.WriteString("2. Check [related code](semantic-search \"${component}\")\n")
-	sb.WriteString("3. Review [test failures](testFailure)\n")
-	sb.WriteString("4. Check [recent changes](changes) to affected code\n\n")
+	sb.WriteString("## Context Loading\n")
+	sb.WriteString("1. Review bug report and reproduction steps\n")
+	sb.WriteString("2. Check related code in affected area\n")
+	sb.WriteString("3. Review test failures\n")
+	sb.WriteString("4. Check recent changes to affected code\n\n")
 
 	sb.WriteString("## Investigation Phase\n")
 	sb.WriteString("### Reproduce the Bug\n")
@@ -329,13 +343,12 @@ func generateBugFixPrompt(ctx GenerateContext) string {
 	sb.WriteString("- [ ] Edge cases are handled\n")
 	sb.WriteString("- [ ] Documentation updated if needed\n\n")
 
-	sb.WriteString("## Deterministic Execution\n")
-	sb.WriteString("Use semantic search to find related code:\n")
-	sb.WriteString("`semantic-search \"similar functionality\"`\n\n")
-	sb.WriteString("Use file search to find test files:\n")
-	sb.WriteString("`file-search \"**/*test*\"`\n\n")
+	sb.WriteString("## Deterministic Requirements\n")
+	sb.WriteString("- Search for related code patterns\n")
+	sb.WriteString("- Locate test files\n")
+	sb.WriteString("- Check for similar bugs elsewhere\n\n")
 
-	sb.WriteString("## Structured Output Requirements\n")
+	sb.WriteString("## Structured Output\n")
 	sb.WriteString("Provide fix with:\n")
 	sb.WriteString("1. Clear description of root cause\n")
 	sb.WriteString("2. Explanation of fix approach\n")
@@ -350,21 +363,21 @@ func generateBugFixPrompt(ctx GenerateContext) string {
 	return sb.String()
 }
 
-func generatePRDescriptionPrompt(ctx GenerateContext) string {
+func generatePRDescriptionPrompt(_ GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
-	sb.WriteString("mode: agent\n")
+	sb.WriteString("agent: agent\n")
 	sb.WriteString("model: gpt-4\n")
 	sb.WriteString("tools: ['changes', 'codebase', 'semantic-search']\n")
 	sb.WriteString("description: 'Generate comprehensive pull request descriptions'\n")
 	sb.WriteString("---\n")
 	sb.WriteString("# Pull Request Description Generator\n\n")
 
-	sb.WriteString("## Context Loading Phase\n")
-	sb.WriteString("1. Review [changed files](changes)\n")
-	sb.WriteString("2. Analyze [commit messages](git log)\n")
-	sb.WriteString("3. Check [related issues](${issueLinks})\n")
+	sb.WriteString("## Context Loading\n")
+	sb.WriteString("1. Review changed files\n")
+	sb.WriteString("2. Analyze commit messages\n")
+	sb.WriteString("3. Check related issues\n")
 	sb.WriteString("4. Understand [project context](../../README.md)\n\n")
 
 	sb.WriteString("## PR Description Structure\n\n")

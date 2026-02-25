@@ -40,16 +40,17 @@ func testingQuestions() []input.Question {
 	}
 }
 
-// chatModesQuestions returns questions for chat mode configuration
-func chatModesQuestions() []input.Question {
+// agentsQuestions returns questions for agent configuration
+func agentsQuestions() []input.Question {
 	return []input.Question{
-		{Key: "enable_chatmodes", Prompt: "Enable chat modes (role-based AI assistants)? (yes/no/skip)", DefaultValue: "yes"},
-		{Key: "chatmode_architect", Prompt: "Enable architect chat mode (planning specialist)?", DefaultValue: "yes"},
-		{Key: "chatmode_frontend", Prompt: "Enable frontend engineer chat mode?", DefaultValue: "yes"},
-		{Key: "chatmode_backend", Prompt: "Enable backend engineer chat mode?", DefaultValue: "yes"},
-		{Key: "chatmode_code_reviewer", Prompt: "Enable code reviewer chat mode?", DefaultValue: "yes"},
-		{Key: "chatmode_technical_writer", Prompt: "Enable technical writer chat mode (documentation)?", DefaultValue: "yes"},
-		{Key: "chatmode_devops", Prompt: "Enable DevOps engineer chat mode (infrastructure)?", DefaultValue: "no"},
+		{Key: "enable_agents", Prompt: "Enable agents (role-based AI assistants)? (yes/no/skip)", DefaultValue: "yes"},
+		{Key: "agent_architect", Prompt: "Enable architect agent (planning specialist)?", DefaultValue: "yes"},
+		{Key: "agent_frontend", Prompt: "Enable frontend engineer agent?", DefaultValue: "yes"},
+		{Key: "agent_backend", Prompt: "Enable backend engineer agent?", DefaultValue: "yes"},
+		{Key: "agent_code_reviewer", Prompt: "Enable code reviewer agent?", DefaultValue: "yes"},
+		{Key: "agent_technical_writer", Prompt: "Enable technical writer agent (documentation)?", DefaultValue: "yes"},
+		{Key: "agent_devops", Prompt: "Enable DevOps engineer agent (infrastructure)?", DefaultValue: "no"},
+		{Key: "agent_tester", Prompt: "Enable tester agent (QA specialist)?", DefaultValue: "yes"},
 	}
 }
 

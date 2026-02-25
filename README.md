@@ -148,79 +148,36 @@ PROSER creates the following files:
 ## Example
 
 ```bash
-$ proser
-===========================================
-PROSER - PROSE File Setup Tool
-===========================================
-
-📁 Target directory: /home/user/awesome-api
+$ proser /path/to/my-project
 
 Select project type:
   1. fullstack - Full-stack application with frontend and backend
-  2. frontend - Frontend application only
+  2. frontend - Frontend application only  
   3. backend - Backend/API service only
 
-Enter project type (fullstack/frontend/backend) [fullstack]: backend
+Enter project type: backend
 
-Please answer the following questions about your project:
+Project name: awesome-api
+Backend language: Go
+Backend framework: Gin
+Primary database: PostgreSQL
+Testing framework: Go testing
 
-Project name [my-project]: awesome-api
-Project description [A software project]: REST API for awesome service
-General code style guidelines [Follow standard formatting]: Use gofmt and golangci-lint
-Security requirements [Follow OWASP top 10]: JWT auth, TLS 1.3, OWASP compliance
-Additional custom rules or guidelines [None]: Use structured logging
-Backend language [Go]: Go
-Backend framework [None]: Gin
-Primary database [PostgreSQL]: PostgreSQL
-API design rules [RESTful API design]: RESTful with versioned endpoints
-Primary testing framework [Jest]: Go testing
-Testing strategy focus [Unit and Integration tests]: Table-driven unit tests and integration tests
-
-📋 Configuration Summary:
-  Project: awesome-api
-  Description: REST API for awesome service
-  Backend: Go with Gin + PostgreSQL
-  Testing: Go testing (Table-driven unit tests and integration tests)
-  Code Style: Use gofmt and golangci-lint
-  API Rules: RESTful with versioned endpoints
-  Security: JWT auth, TLS 1.3, OWASP compliance
-  Custom Rules: Use structured logging
-
-📝 Generating files based on your configuration...
-  ✓ Generated copilot-instructions files
-  ✓ Generated backend-instructions files
-  ✓ Generated testing-instructions files
-  ✓ Generated agent-md files
+✓ Generated .github/copilot-instructions.md
+✓ Generated .github/instructions/backend.instructions.md
+✓ Generated .github/instructions/testing.instructions.md
+✓ Generated AGENTS.md
 
 ✅ Setup complete!
-📁 Files created in .github/
-📄 AGENT.md files created in subdirectories
-
-🎉 Your project is now configured for PROSE Architectural Style for AI-Native Development!
 ```
 
-## Supported Languages and Frameworks
+## Supported Technologies
 
-### Languages
-- Go
-- Python
-- Java
-- JavaScript/Node.js
-- TypeScript
-- Rust
-- C#
+**Languages**: Go, Python, Java, JavaScript/TypeScript, Rust, C#
 
-### Frontend Frameworks
-- React
-- Vue
-- Angular
-- Vanilla JS/TS
+**Frontend**: React, Vue, Angular, Svelte
 
-### Testing Frameworks
-- Jest (JavaScript/TypeScript)
-- pytest (Python)
-- JUnit (Java)
-- Go testing (Go)
+**Testing**: Go testing, Jest, pytest, JUnit
 
 ## Extending PROSER
 
@@ -302,61 +259,28 @@ func (g *PromptsGenerator) Generate(ctx GenerateContext) (map[string]string, err
 }
 ```
 
+## Generated Files
+
+PROSER creates a complete PROSE framework structure:
+
+- `.github/copilot-instructions.md` - Root instructions with project overview, tech stack, code style
+- `.github/instructions/*.instructions.md` - Domain-specific guidelines (backend, frontend, testing)
+- `.github/agents/*.agent.md` - Specialized agent definitions (optional)
+- `.github/prompts/*.prompt.md` - Workflow templates (optional)
+- `.github/specs/*.spec.md` - Specification templates (optional)
+- `AGENTS.md` - Project discovery file at root
+
 ## Contributing
 
-Contributions are welcome! Please ensure:
-
-1. Code follows Go best practices
-2. New features include tests
-3. Architecture principles are maintained (SOLID, DRY, etc.)
-4. Documentation is updated
+Contributions welcome! Ensure:
+- Code follows Go best practices
+- New features include tests
+- Documentation is updated
 
 ## License
 
-MIT License - See LICENSE file for details
+MIT License
 
 ## Credits
 
-Inspired by the GitHub Copilot Workspace PROSE Architectural Style for AI-Native Development described here: https://danielmeppiel.github.io/awesome-ai-native/docs/prose/
-
-## Generated Files
-
-### `.github/copilot-instructions.md`
-Main instructions for GitHub Copilot containing:
-- Project overview
-- Language and code style guidelines
-- API design rules
-- Security requirements
-- Code review checklist
-
-### `.github/agents/general-instructions.md`
-Detailed agent instructions including:
-- Project context
-- Agent responsibilities
-- Communication style
-- Specific guidelines for code generation, review, and documentation
-
-### `.github/workflows/ci.yml`
-Language-specific CI workflow template supporting:
-- Go
-- Python
-- JavaScript/TypeScript/Node.js
-- Generic template for other languages
-
-### `AGENT.md` files
-Created in each subdirectory (up to 4 levels deep) with:
-- Directory-specific context
-- Guidelines relevant to that location
-- Testing and documentation requirements
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-MIT License - feel free to use this tool in your projects!
-
-## Support
-
-If you encounter any issues or have questions, please open an issue on GitHub.
+Inspired by [PROSE Architectural Style](https://danielmeppiel.github.io/awesome-ai-native/docs/prose/) for AI-Native Development.

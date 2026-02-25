@@ -22,7 +22,7 @@ func (p *FullstackProject) Generators() []generator.Generator {
 		&generator.FrontendInstructionsGenerator{},
 		&generator.BackendInstructionsGenerator{},
 		&generator.TestingInstructionsGenerator{},
-		&generator.ChatModesGenerator{},
+		&generator.AgentsGenerator{},
 		&generator.PromptsGenerator{},
 		&generator.SpecsGenerator{},
 		&generator.AgentsMdGenerator{},
@@ -30,13 +30,15 @@ func (p *FullstackProject) Generators() []generator.Generator {
 }
 
 func (p *FullstackProject) Questions() []input.Question {
-	return append(append(append(append(
-		generalQuestions(),
-		frontendQuestions()...),
-		append(backendQuestions(), testingQuestions()...)...),
-		chatModesQuestions()...),
-		append(promptsQuestions(), specsQuestions()...)...,
-	)
+	// All detailed questions for custom setup
+	questions := generalQuestions()
+	questions = append(questions, backendQuestions()...)
+	questions = append(questions, testingQuestions()...)
+	questions = append(questions, agentsQuestions()...)
+	questions = append(questions, promptsQuestions()...)
+	questions = append(questions, specsQuestions()...)
+
+	return questions
 }
 
 // FrontendProject represents a frontend-only project
@@ -55,7 +57,7 @@ func (p *FrontendProject) Generators() []generator.Generator {
 		&generator.CopilotInstructionsGenerator{},
 		&generator.FrontendInstructionsGenerator{},
 		&generator.TestingInstructionsGenerator{},
-		&generator.ChatModesGenerator{},
+		&generator.AgentsGenerator{},
 		&generator.PromptsGenerator{},
 		&generator.SpecsGenerator{},
 		&generator.AgentsMdGenerator{},
@@ -63,12 +65,14 @@ func (p *FrontendProject) Generators() []generator.Generator {
 }
 
 func (p *FrontendProject) Questions() []input.Question {
-	return append(append(append(
-		generalQuestions(),
-		frontendQuestions()...),
-		append(testingQuestions(), chatModesQuestions()...)...),
-		append(promptsQuestions(), specsQuestions()...)...,
-	)
+	// All detailed questions for custom setup
+	questions := generalQuestions()
+	questions = append(questions, testingQuestions()...)
+	questions = append(questions, agentsQuestions()...)
+	questions = append(questions, promptsQuestions()...)
+	questions = append(questions, specsQuestions()...)
+
+	return questions
 }
 
 // BackendProject represents a backend-only project
@@ -87,7 +91,7 @@ func (p *BackendProject) Generators() []generator.Generator {
 		&generator.CopilotInstructionsGenerator{},
 		&generator.BackendInstructionsGenerator{},
 		&generator.TestingInstructionsGenerator{},
-		&generator.ChatModesGenerator{},
+		&generator.AgentsGenerator{},
 		&generator.PromptsGenerator{},
 		&generator.SpecsGenerator{},
 		&generator.AgentsMdGenerator{},
@@ -95,10 +99,12 @@ func (p *BackendProject) Generators() []generator.Generator {
 }
 
 func (p *BackendProject) Questions() []input.Question {
-	return append(append(append(
-		generalQuestions(),
-		backendQuestions()...),
-		append(testingQuestions(), chatModesQuestions()...)...),
-		append(promptsQuestions(), specsQuestions()...)...,
-	)
+	// All detailed questions for custom setup
+	questions := generalQuestions()
+	questions = append(questions, testingQuestions()...)
+	questions = append(questions, agentsQuestions()...)
+	questions = append(questions, promptsQuestions()...)
+	questions = append(questions, specsQuestions()...)
+
+	return questions
 }

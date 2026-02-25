@@ -4,6 +4,8 @@ description: "Go backend development guidelines with context engineering"
 ---
 # Go Backend Development Guidelines
 
+Inherits from [global instructions](../copilot-instructions.md).
+
 ## Context Loading
 Review [module dependencies](../../go.mod) and
 [application structure](../../main.go) before starting.
