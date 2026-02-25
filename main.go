@@ -57,13 +57,34 @@ func main() {
 	// Let user pick project type
 	projectType := selectProjectType(collector)
 
-	// Collect input for that project type
-	fmt.Println("\nPlease answer the following questions about your project:")
+	// Ask if user wants to generate all files
+	fmt.Println("\n🤖 Quick setup or custom configuration?")
 	fmt.Println()
-	answers, err := collector.Collect(projectType.Questions())
+
+	earlyAnswers, err := collector.Collect([]input.Question{
+		{Key: "generate_all_files", Prompt: "Generate all recommended files for this project type? (yes/no)", DefaultValue: "yes"},
+	})
 	if err != nil {
 		fmt.Printf("❌ Error collecting input: %v\n", err)
 		os.Exit(1)
+	}
+
+	var answers map[string]string
+
+	// Check if user wants all files or custom selection
+	generateAll := earlyAnswers["generate_all_files"]
+	if generateAll == "yes" || generateAll == "y" || generateAll == "Y" || generateAll == "YES" {
+		// Quick setup: collect only essential questions
+		answers = collectQuickSetup(collector, projectType)
+	} else {
+		// Custom setup: collect all detailed questions
+		fmt.Println("\nPlease answer the following questions about your project:")
+		fmt.Println()
+		answers, err = collector.Collect(projectType.Questions())
+		if err != nil {
+			fmt.Printf("❌ Error collecting input: %v\n", err)
+			os.Exit(1)
+		}
 	}
 
 	// Build config from answers
@@ -127,6 +148,64 @@ func selectProjectType(collector input.InputCollector) project.ProjectType {
 	}
 
 	return pt
+}
+
+// collectQuickSetup collects only essential questions and auto-enables all appropriate files
+func collectQuickSetup(collector input.InputCollector, projectType project.ProjectType) map[string]string {
+	fmt.Println("\n⚡ Quick setup mode - collecting essential project information:")
+	fmt.Println()
+
+	// Determine which questions to ask based on project type
+	var questions []input.Question
+
+	// Always ask general questions
+	questions = append(questions, input.Question{Key: "project_name", Prompt: "Project name", DefaultValue: "my-project"})
+	questions = append(questions, input.Question{Key: "description", Prompt: "Project description", DefaultValue: "A software project"})
+	questions = append(questions, input.Question{Key: "code_style", Prompt: "Code style guidelines", DefaultValue: "Follow standard formatting"})
+	questions = append(questions, input.Question{Key: "security", Prompt: "Security requirements", DefaultValue: "Follow OWASP top 10"})
+
+	// Ask tech stack questions based on project type
+	switch projectType.Name() {
+	case "fullstack":
+		questions = append(questions, input.Question{Key: "frontend_language", Prompt: "Frontend language", DefaultValue: "JavaScript"})
+		questions = append(questions, input.Question{Key: "frontend_framework", Prompt: "Frontend framework", DefaultValue: "React"})
+		questions = append(questions, input.Question{Key: "backend_language", Prompt: "Backend language", DefaultValue: "Go"})
+		questions = append(questions, input.Question{Key: "backend_framework", Prompt: "Backend framework", DefaultValue: "None"})
+		questions = append(questions, input.Question{Key: "backend_database", Prompt: "Database", DefaultValue: "PostgreSQL"})
+		questions = append(questions, input.Question{Key: "testing_framework", Prompt: "Testing framework", DefaultValue: "Jest"})
+
+	case "frontend":
+		questions = append(questions, input.Question{Key: "frontend_language", Prompt: "Frontend language", DefaultValue: "JavaScript"})
+		questions = append(questions, input.Question{Key: "frontend_framework", Prompt: "Frontend framework", DefaultValue: "React"})
+		questions = append(questions, input.Question{Key: "frontend_build_tool", Prompt: "Build tool", DefaultValue: "Vite"})
+		questions = append(questions, input.Question{Key: "testing_framework", Prompt: "Testing framework", DefaultValue: "Jest"})
+
+	case "backend":
+		questions = append(questions, input.Question{Key: "backend_language", Prompt: "Backend language", DefaultValue: "Go"})
+		questions = append(questions, input.Question{Key: "backend_framework", Prompt: "Backend framework", DefaultValue: "None"})
+		questions = append(questions, input.Question{Key: "backend_database", Prompt: "Database", DefaultValue: "PostgreSQL"})
+		questions = append(questions, input.Question{Key: "testing_framework", Prompt: "Testing framework", DefaultValue: "Go testing"})
+	}
+
+	// Collect answers
+	answers, err := collector.Collect(questions)
+	if err != nil {
+		fmt.Printf("❌ Error collecting input: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Auto-populate remaining answers for all files
+	allAnswers := config.DefaultAnswersForProjectType(projectType.Name(), answers)
+
+	fmt.Println()
+	fmt.Println("✨ Enabling all recommended files:")
+	fmt.Println("  • Core instructions (copilot-instructions, domain-specific)")
+	fmt.Println("  • Agent definitions (architect, engineers, code reviewer, etc.)")
+	fmt.Println("  • Prompt templates (code review, feature spec, refactor, bug fix)")
+	fmt.Println("  • Specification templates (feature, API, component)")
+	fmt.Println("  • AGENTS.md discovery file")
+
+	return allAnswers
 }
 
 // displaySummary shows the configuration summary

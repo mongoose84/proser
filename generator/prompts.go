@@ -49,7 +49,7 @@ func generateCodeReviewPrompt(ctx GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
-	sb.WriteString("mode: agent\n")
+	sb.WriteString("agent: agent\n")
 	sb.WriteString("model: gpt-4\n")
 	sb.WriteString("tools: ['file-search', 'semantic-search', 'changes', 'problems']\n")
 	sb.WriteString("description: 'Structured code review workflow with validation gates'\n")
@@ -134,7 +134,7 @@ func generateFeatureSpecPrompt(ctx GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
-	sb.WriteString("mode: agent\n")
+	sb.WriteString("agent: agent\n")
 	sb.WriteString("model: gpt-4\n")
 	sb.WriteString("tools: ['file-search', 'semantic-search', 'codebase']\n")
 	sb.WriteString("description: 'Feature implementation workflow with specification-first approach'\n")
@@ -223,7 +223,7 @@ func generateRefactorPrompt(_ GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
-	sb.WriteString("mode: agent\n")
+	sb.WriteString("agent: agent\n")
 	sb.WriteString("model: gpt-4\n")
 	sb.WriteString("tools: ['file-search', 'semantic-search', 'codebase', 'editFiles', 'runTests']\n")
 	sb.WriteString("description: 'Code refactoring workflow with safety checks'\n")
@@ -367,7 +367,7 @@ func generatePRDescriptionPrompt(_ GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
-	sb.WriteString("mode: agent\n")
+	sb.WriteString("agent: agent\n")
 	sb.WriteString("model: gpt-4\n")
 	sb.WriteString("tools: ['changes', 'codebase', 'semantic-search']\n")
 	sb.WriteString("description: 'Generate comprehensive pull request descriptions'\n")

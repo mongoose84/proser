@@ -30,13 +30,15 @@ func (p *FullstackProject) Generators() []generator.Generator {
 }
 
 func (p *FullstackProject) Questions() []input.Question {
-	return append(append(append(append(
-		generalQuestions(),
-		frontendQuestions()...),
-		append(backendQuestions(), testingQuestions()...)...),
-		agentsQuestions()...),
-		append(promptsQuestions(), specsQuestions()...)...,
-	)
+	// All detailed questions for custom setup
+	questions := generalQuestions()
+	questions = append(questions, backendQuestions()...)
+	questions = append(questions, testingQuestions()...)
+	questions = append(questions, agentsQuestions()...)
+	questions = append(questions, promptsQuestions()...)
+	questions = append(questions, specsQuestions()...)
+
+	return questions
 }
 
 // FrontendProject represents a frontend-only project
@@ -63,12 +65,14 @@ func (p *FrontendProject) Generators() []generator.Generator {
 }
 
 func (p *FrontendProject) Questions() []input.Question {
-	return append(append(append(
-		generalQuestions(),
-		frontendQuestions()...),
-		append(testingQuestions(), agentsQuestions()...)...),
-		append(promptsQuestions(), specsQuestions()...)...,
-	)
+	// All detailed questions for custom setup
+	questions := generalQuestions()
+	questions = append(questions, testingQuestions()...)
+	questions = append(questions, agentsQuestions()...)
+	questions = append(questions, promptsQuestions()...)
+	questions = append(questions, specsQuestions()...)
+
+	return questions
 }
 
 // BackendProject represents a backend-only project
@@ -95,10 +99,12 @@ func (p *BackendProject) Generators() []generator.Generator {
 }
 
 func (p *BackendProject) Questions() []input.Question {
-	return append(append(append(
-		generalQuestions(),
-		backendQuestions()...),
-		append(testingQuestions(), agentsQuestions()...)...),
-		append(promptsQuestions(), specsQuestions()...)...,
-	)
+	// All detailed questions for custom setup
+	questions := generalQuestions()
+	questions = append(questions, testingQuestions()...)
+	questions = append(questions, agentsQuestions()...)
+	questions = append(questions, promptsQuestions()...)
+	questions = append(questions, specsQuestions()...)
+
+	return questions
 }
