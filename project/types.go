@@ -22,7 +22,7 @@ func (p *FullstackProject) Generators() []generator.Generator {
 		&generator.FrontendInstructionsGenerator{},
 		&generator.BackendInstructionsGenerator{},
 		&generator.TestingInstructionsGenerator{},
-		&generator.ChatModesGenerator{},
+		&generator.AgentsGenerator{},
 		&generator.PromptsGenerator{},
 		&generator.SpecsGenerator{},
 		&generator.AgentsMdGenerator{},
@@ -34,7 +34,7 @@ func (p *FullstackProject) Questions() []input.Question {
 		generalQuestions(),
 		frontendQuestions()...),
 		append(backendQuestions(), testingQuestions()...)...),
-		chatModesQuestions()...),
+		agentsQuestions()...),
 		append(promptsQuestions(), specsQuestions()...)...,
 	)
 }
@@ -55,7 +55,7 @@ func (p *FrontendProject) Generators() []generator.Generator {
 		&generator.CopilotInstructionsGenerator{},
 		&generator.FrontendInstructionsGenerator{},
 		&generator.TestingInstructionsGenerator{},
-		&generator.ChatModesGenerator{},
+		&generator.AgentsGenerator{},
 		&generator.PromptsGenerator{},
 		&generator.SpecsGenerator{},
 		&generator.AgentsMdGenerator{},
@@ -66,7 +66,7 @@ func (p *FrontendProject) Questions() []input.Question {
 	return append(append(append(
 		generalQuestions(),
 		frontendQuestions()...),
-		append(testingQuestions(), chatModesQuestions()...)...),
+		append(testingQuestions(), agentsQuestions()...)...),
 		append(promptsQuestions(), specsQuestions()...)...,
 	)
 }
@@ -87,7 +87,7 @@ func (p *BackendProject) Generators() []generator.Generator {
 		&generator.CopilotInstructionsGenerator{},
 		&generator.BackendInstructionsGenerator{},
 		&generator.TestingInstructionsGenerator{},
-		&generator.ChatModesGenerator{},
+		&generator.AgentsGenerator{},
 		&generator.PromptsGenerator{},
 		&generator.SpecsGenerator{},
 		&generator.AgentsMdGenerator{},
@@ -98,7 +98,7 @@ func (p *BackendProject) Questions() []input.Question {
 	return append(append(append(
 		generalQuestions(),
 		backendQuestions()...),
-		append(testingQuestions(), chatModesQuestions()...)...),
+		append(testingQuestions(), agentsQuestions()...)...),
 		append(promptsQuestions(), specsQuestions()...)...,
 	)
 }

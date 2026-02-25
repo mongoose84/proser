@@ -30,8 +30,8 @@ type TestingConfig struct {
 	Strategy  string // Unit, Integration, E2E focus
 }
 
-// ChatModesConfig holds chat mode configuration
-type ChatModesConfig struct {
+// AgentsConfig holds agent configuration
+type AgentsConfig struct {
 	EnableArchitect       bool
 	EnableFrontend        bool
 	EnableBackend         bool
@@ -58,13 +58,13 @@ type SpecsConfig struct {
 
 // ProjectConfig is the main configuration structure
 type ProjectConfig struct {
-	General   GeneralConfig
-	Frontend  *FrontendConfig // nil if no frontend
-	Backend   *BackendConfig  // nil if no backend
-	Testing   TestingConfig
-	ChatModes *ChatModesConfig // nil if no chat modes
-	Prompts   *PromptsConfig   // nil if no prompts
-	Specs     *SpecsConfig     // nil if no specs
+	General  GeneralConfig
+	Frontend *FrontendConfig // nil if no frontend
+	Backend  *BackendConfig  // nil if no backend
+	Testing  TestingConfig
+	Agents   *AgentsConfig  // nil if no agents
+	Prompts  *PromptsConfig // nil if no prompts
+	Specs    *SpecsConfig   // nil if no specs
 }
 
 // HasFrontend returns true if the project has frontend configuration
@@ -77,9 +77,9 @@ func (c *ProjectConfig) HasBackend() bool {
 	return c.Backend != nil
 }
 
-// HasChatModes returns true if the project has chat modes configuration
-func (c *ProjectConfig) HasChatModes() bool {
-	return c.ChatModes != nil
+// HasAgents returns true if the project has agents configuration
+func (c *ProjectConfig) HasAgents() bool {
+	return c.Agents != nil
 }
 
 // HasPrompts returns true if the project has prompts configuration

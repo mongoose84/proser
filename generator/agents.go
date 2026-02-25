@@ -5,51 +5,51 @@ import (
 	"strings"
 )
 
-// ChatModesGenerator generates .github/chatmodes/*.chatmode.md files
-type ChatModesGenerator struct{}
+// AgentsGenerator generates .github/agents/*.agent.md files
+type AgentsGenerator struct{}
 
 // Name returns the generator name
-func (g *ChatModesGenerator) Name() string {
-	return "chatmodes"
+func (g *AgentsGenerator) Name() string {
+	return "agents"
 }
 
-// Generate creates chat mode files
-func (g *ChatModesGenerator) Generate(ctx GenerateContext) (map[string]string, error) {
-	if !ctx.Config.HasChatModes() {
+// Generate creates agent files
+func (g *AgentsGenerator) Generate(ctx GenerateContext) (map[string]string, error) {
+	if !ctx.Config.HasAgents() {
 		return map[string]string{}, nil
 	}
 
 	files := make(map[string]string)
-	cfg := ctx.Config.ChatModes
+	cfg := ctx.Config.Agents
 
 	if cfg.EnableArchitect {
-		files[".github/chatmodes/architect.chatmode.md"] = generateArchitectChatMode(ctx)
+		files[".github/agents/architect.agent.md"] = generateArchitectAgent(ctx)
 	}
 
 	if cfg.EnableFrontend && ctx.Config.HasFrontend() {
-		files[".github/chatmodes/frontend-engineer.chatmode.md"] = generateFrontendEngineerChatMode(ctx)
+		files[".github/agents/frontend-engineer.agent.md"] = generateFrontendEngineerAgent(ctx)
 	}
 
 	if cfg.EnableBackend && ctx.Config.HasBackend() {
-		files[".github/chatmodes/backend-engineer.chatmode.md"] = generateBackendEngineerChatMode(ctx)
+		files[".github/agents/backend-engineer.agent.md"] = generateBackendEngineerAgent(ctx)
 	}
 
 	if cfg.EnableCodeReviewer {
-		files[".github/chatmodes/code-reviewer.chatmode.md"] = generateCodeReviewerChatMode(ctx)
+		files[".github/agents/code-reviewer.agent.md"] = generateCodeReviewerAgent(ctx)
 	}
 
 	if cfg.EnableTechnicalWriter {
-		files[".github/chatmodes/technical-writer.chatmode.md"] = generateTechnicalWriterChatMode(ctx)
+		files[".github/agents/technical-writer.agent.md"] = generateTechnicalWriterAgent(ctx)
 	}
 
 	if cfg.EnableDevOps {
-		files[".github/chatmodes/devops-engineer.chatmode.md"] = generateDevOpsEngineerChatMode(ctx)
+		files[".github/agents/devops-engineer.agent.md"] = generateDevOpsEngineerAgent(ctx)
 	}
 
 	return files, nil
 }
 
-func generateArchitectChatMode(ctx GenerateContext) string {
+func generateArchitectAgent(ctx GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
@@ -89,7 +89,7 @@ func generateArchitectChatMode(ctx GenerateContext) string {
 	return sb.String()
 }
 
-func generateFrontendEngineerChatMode(ctx GenerateContext) string {
+func generateFrontendEngineerAgent(ctx GenerateContext) string {
 	var sb strings.Builder
 	frontend := ctx.Config.Frontend
 
@@ -133,7 +133,7 @@ func generateFrontendEngineerChatMode(ctx GenerateContext) string {
 	return sb.String()
 }
 
-func generateBackendEngineerChatMode(ctx GenerateContext) string {
+func generateBackendEngineerAgent(ctx GenerateContext) string {
 	var sb strings.Builder
 	backend := ctx.Config.Backend
 
@@ -182,7 +182,7 @@ func generateBackendEngineerChatMode(ctx GenerateContext) string {
 	return sb.String()
 }
 
-func generateCodeReviewerChatMode(ctx GenerateContext) string {
+func generateCodeReviewerAgent(ctx GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
@@ -237,7 +237,7 @@ func generateCodeReviewerChatMode(ctx GenerateContext) string {
 	return sb.String()
 }
 
-func generateTechnicalWriterChatMode(ctx GenerateContext) string {
+func generateTechnicalWriterAgent(ctx GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
@@ -286,7 +286,7 @@ func generateTechnicalWriterChatMode(ctx GenerateContext) string {
 	return sb.String()
 }
 
-func generateDevOpsEngineerChatMode(ctx GenerateContext) string {
+func generateDevOpsEngineerAgent(ctx GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
