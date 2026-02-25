@@ -4,6 +4,8 @@ description: "Testing guidelines with context engineering"
 ---
 # Testing Guidelines
 
+Inherits from [global instructions](../copilot-instructions.md).
+
 ## Context Loading
 Review [project conventions](../../README.md) and
 [existing Go testing tests](../../) before writing tests.
