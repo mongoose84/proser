@@ -192,87 +192,24 @@ func (g *AgentsMdGenerator) writeDevelopmentGuidelines(sb *strings.Builder, cfg 
 		sb.WriteString("### Testing Strategy\n")
 		sb.WriteString(fmt.Sprintf("- **Framework**: %s\n", cfg.Testing.Framework))
 		sb.WriteString(fmt.Sprintf("- **Strategy**: %s\n", cfg.Testing.Strategy))
-		sb.WriteString("- Maintain test coverage for all new features\n")
-		sb.WriteString("- Write tests before implementing features when possible\n")
 		sb.WriteString("\n")
-	}
-
-	sb.WriteString("### Building and Running\n")
-	if cfg.HasBackend() {
-		g.writeBackendCommands(sb, cfg)
-	}
-	if cfg.HasFrontend() {
-		g.writeFrontendCommands(sb, cfg)
-	}
-	sb.WriteString("\n")
-}
-
-func (g *AgentsMdGenerator) writeBackendCommands(sb *strings.Builder, cfg config.ProjectConfig) {
-	lang := strings.ToLower(cfg.Backend.Language)
-	switch lang {
-	case "go", "golang":
-		sb.WriteString("```bash\n")
-		sb.WriteString("# Build\ngo build\n\n")
-		sb.WriteString("# Run\ngo run .\n\n")
-		sb.WriteString("# Test\ngo test ./...\n\n")
-		sb.WriteString("# Format\ngofmt -w .\n")
-		sb.WriteString("```\n")
-	case "python":
-		sb.WriteString("```bash\n")
-		sb.WriteString("# Install dependencies\npip install -r requirements.txt\n\n")
-		sb.WriteString("# Run\npython main.py\n\n")
-		sb.WriteString("# Test\npytest\n\n")
-		sb.WriteString("# Format\nblack .\n")
-		sb.WriteString("```\n")
-	case "javascript", "typescript", "node.js", "nodejs":
-		sb.WriteString("```bash\n")
-		sb.WriteString("# Install dependencies\nnpm install\n\n")
-		sb.WriteString("# Run\nnpm start\n\n")
-		sb.WriteString("# Test\nnpm test\n\n")
-		sb.WriteString("# Format\nnpm run format\n")
-		sb.WriteString("```\n")
-	default:
-		sb.WriteString("```bash\n")
-		sb.WriteString("# See project-specific build instructions\n")
-		sb.WriteString("```\n")
-	}
-}
-
-func (g *AgentsMdGenerator) writeFrontendCommands(sb *strings.Builder, cfg config.ProjectConfig) {
-	framework := strings.ToLower(cfg.Frontend.Framework)
-	switch framework {
-	case "react", "vue", "angular", "next.js", "svelte":
-		sb.WriteString("```bash\n")
-		sb.WriteString("# Install dependencies\nnpm install\n\n")
-		sb.WriteString("# Development server\nnpm run dev\n\n")
-		sb.WriteString("# Build for production\nnpm run build\n\n")
-		sb.WriteString("# Test\nnpm test\n")
-		sb.WriteString("```\n")
-	default:
-		sb.WriteString("```bash\n")
-		sb.WriteString("# Install dependencies\nnpm install\n\n")
-		sb.WriteString("# Run dev server\nnpm start\n")
-		sb.WriteString("```\n")
 	}
 }
 
 func (g *AgentsMdGenerator) writeInstructionsHierarchy(sb *strings.Builder, cfg config.ProjectConfig) {
 	sb.WriteString("## Instructions Hierarchy\n\n")
-	sb.WriteString("```\n")
-	sb.WriteString(".github/\n")
-	sb.WriteString("└── instructions/\n")
+	sb.WriteString("Domain-specific instructions in [.github/instructions/](.github/instructions/):\n")
 
 	if cfg.HasBackend() {
-		sb.WriteString("    ├── backend.instructions.md\n")
+		sb.WriteString("- [Backend Guidelines](.github/instructions/backend.instructions.md)\n")
 	}
 	if cfg.HasFrontend() {
-		sb.WriteString("    ├── frontend.instructions.md\n")
+		sb.WriteString("- [Frontend Guidelines](.github/instructions/frontend.instructions.md)\n")
 	}
 	if cfg.Testing.Framework != "" {
-		sb.WriteString("    └── testing.instructions.md\n")
+		sb.WriteString("- [Testing Guidelines](.github/instructions/testing.instructions.md)\n")
 	}
-	sb.WriteString("```\n\n")
-	sb.WriteString("Domain-specific instructions inherit from [copilot-instructions.md](.github/copilot-instructions.md) at the root.\n\n")
+	sb.WriteString("\nAll inherit from [copilot-instructions.md](.github/copilot-instructions.md).\n\n")
 }
 
 func (g *AgentsMdGenerator) writeAgentBoundaries(sb *strings.Builder, cfg config.ProjectConfig) {
@@ -280,122 +217,46 @@ func (g *AgentsMdGenerator) writeAgentBoundaries(sb *strings.Builder, cfg config
 
 	sb.WriteString("### ✅ Agents CAN\n")
 	sb.WriteString("- Read any file in the repository\n")
-	sb.WriteString("- Search codebase semantically or with grep\n")
-	sb.WriteString("- Analyze architecture and patterns\n")
-	sb.WriteString("- Generate new code following conventions\n")
-	sb.WriteString("- Run tests and builds\n")
-	sb.WriteString("- Create new files in appropriate locations\n")
-	sb.WriteString("- Suggest improvements and refactorings\n\n")
+	sb.WriteString("- Search codebase and analyze patterns\n")
+	sb.WriteString("- Generate code following conventions\n")
+	sb.WriteString("- Run tests and builds\n\n")
 
 	sb.WriteString("### ❌ Agents SHOULD NOT\n")
-	sb.WriteString("- Modify dependency files without explicit request\n")
+	sb.WriteString("- Modify dependencies without explicit request\n")
 	sb.WriteString("- Change core architecture without discussion\n")
 	sb.WriteString("- Skip test coverage for new features\n")
-	sb.WriteString("- Introduce breaking changes without clear communication\n")
-	sb.WriteString("- Create files outside the project directory\n")
-
 	if cfg.General.Security != "" {
-		sb.WriteString("- Commit security-sensitive information (keys, tokens, passwords)\n")
+		sb.WriteString("- Commit security-sensitive information\n")
 	}
 	sb.WriteString("\n")
 }
 
 func (g *AgentsMdGenerator) writeProgressiveDisclosure(sb *strings.Builder, cfg config.ProjectConfig) {
 	sb.WriteString("## Progressive Disclosure\n\n")
-	sb.WriteString("When exploring this codebase:\n\n")
-
-	sb.WriteString("1. **Start with**: [README.md](README.md) for high-level overview\n")
-	sb.WriteString("2. **Review**: [copilot-instructions.md](.github/copilot-instructions.md) for global standards\n")
-
-	if cfg.HasBackend() {
-		sb.WriteString("3. **Backend**: Explore [backend instructions](.github/instructions/backend.instructions.md)\n")
+	sb.WriteString("1. Start: [README.md](README.md)\n")
+	sb.WriteString("2. Global: [copilot-instructions.md](.github/copilot-instructions.md)\n")
+	if cfg.HasBackend() || cfg.HasFrontend() || cfg.Testing.Framework != "" {
+		sb.WriteString("3. Domain-specific: [.github/instructions/](.github/instructions/)\n")
 	}
-	if cfg.HasFrontend() {
-		sb.WriteString("3. **Frontend**: Explore [frontend instructions](.github/instructions/frontend.instructions.md)\n")
-	}
-	if cfg.Testing.Framework != "" {
-		sb.WriteString("4. **Testing**: Review [testing instructions](.github/instructions/testing.instructions.md)\n")
-	}
-
 	sb.WriteString("\n")
 }
 
 func (g *AgentsMdGenerator) writeCommonTasks(sb *strings.Builder, cfg config.ProjectConfig) {
-	sb.WriteString("## Common Tasks\n\n")
-
-	if cfg.HasBackend() {
-		sb.WriteString("### Adding a New API Endpoint\n")
-		sb.WriteString("1. Define the route and handler\n")
-		sb.WriteString("2. Implement business logic\n")
-		sb.WriteString("3. Add input validation\n")
-		sb.WriteString("4. Write unit and integration tests\n")
-		sb.WriteString("5. Update API documentation\n\n")
-	}
-
-	if cfg.HasFrontend() {
-		sb.WriteString("### Adding a New Component\n")
-		sb.WriteString("1. Create component file in appropriate directory\n")
-		sb.WriteString("2. Implement component logic and styling\n")
-		sb.WriteString("3. Add prop types/interfaces\n")
-		sb.WriteString("4. Write component tests\n")
-		sb.WriteString("5. Export from index file\n\n")
-	}
-
-	if cfg.Testing.Framework != "" {
-		sb.WriteString("### Adding Tests\n")
-		sb.WriteString("1. Create test file alongside source\n")
-		sb.WriteString("2. Follow existing test patterns\n")
-		sb.WriteString(fmt.Sprintf("3. Use %s for assertions\n", cfg.Testing.Framework))
-		sb.WriteString("4. Test both happy and error paths\n")
-		sb.WriteString("5. Run tests locally before committing\n\n")
-	}
+	// Removed - too generic, users know their workflows
 }
 
 func (g *AgentsMdGenerator) writeReferences(sb *strings.Builder, cfg config.ProjectConfig) {
 	sb.WriteString("## References\n\n")
 	sb.WriteString("- [PROSE Specification](https://danielmeppiel.github.io/awesome-ai-native/docs/prose/)\n")
 	sb.WriteString("- [GitHub Copilot Documentation](https://docs.github.com/en/copilot)\n")
-
-	if cfg.HasBackend() {
-		lang := strings.ToLower(cfg.Backend.Language)
-		switch lang {
-		case "go", "golang":
-			sb.WriteString("- [Effective Go](https://go.dev/doc/effective_go)\n")
-			sb.WriteString("- [Go Documentation](https://go.dev/doc/)\n")
-		case "python":
-			sb.WriteString("- [Python Style Guide (PEP 8)](https://peps.python.org/pep-0008/)\n")
-			sb.WriteString("- [Python Documentation](https://docs.python.org/)\n")
-		case "javascript", "typescript", "node.js", "nodejs":
-			sb.WriteString("- [Node.js Documentation](https://nodejs.org/docs/)\n")
-			sb.WriteString("- [MDN Web Docs](https://developer.mozilla.org/)\n")
-		}
-	}
-
-	if cfg.HasFrontend() {
-		framework := strings.ToLower(cfg.Frontend.Framework)
-		switch framework {
-		case "react":
-			sb.WriteString("- [React Documentation](https://react.dev/)\n")
-		case "vue", "vue.js":
-			sb.WriteString("- [Vue.js Documentation](https://vuejs.org/)\n")
-		case "angular":
-			sb.WriteString("- [Angular Documentation](https://angular.dev/)\n")
-		case "next.js":
-			sb.WriteString("- [Next.js Documentation](https://nextjs.org/docs)\n")
-		case "svelte":
-			sb.WriteString("- [Svelte Documentation](https://svelte.dev/docs)\n")
-		}
-	}
-
 	sb.WriteString("\n")
 }
 
 func (g *AgentsMdGenerator) writeContextEngineering(sb *strings.Builder) {
-	sb.WriteString("## Context Engineering Notes\n\n")
-	sb.WriteString("This file follows PROSE principles:\n\n")
-	sb.WriteString("- **Progressive Disclosure**: Links to deeper detail rather than overwhelming upfront\n")
-	sb.WriteString("- **Explicit Hierarchy**: Root-level guidance, domain-specific in subdirectories\n")
-	sb.WriteString("- **Safety Boundaries**: Clear CAN/CANNOT agent boundaries\n")
-	sb.WriteString("- **Orchestrated Composition**: Modular structure enables independent agent work\n")
-	sb.WriteString("- **Reduced Scope**: Focused sections, right-sized for context windows\n\n")
+	sb.WriteString("## Context Engineering\n\n")
+	sb.WriteString("This file follows PROSE principles:\n")
+	sb.WriteString("- **Progressive Disclosure**: Links to detail rather than overwhelming upfront\n")
+	sb.WriteString("- **Reduced Scope**: Focused, essential content only\n")
+	sb.WriteString("- **Explicit Hierarchy**: Root guidance, domain-specific in subdirectories\n")
+	sb.WriteString("\n")
 }

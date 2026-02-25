@@ -219,7 +219,7 @@ func generateFeatureSpecPrompt(ctx GenerateContext) string {
 	return sb.String()
 }
 
-func generateRefactorPrompt(ctx GenerateContext) string {
+func generateRefactorPrompt(_ GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
@@ -290,7 +290,7 @@ func generateRefactorPrompt(ctx GenerateContext) string {
 	return sb.String()
 }
 
-func generateBugFixPrompt(ctx GenerateContext) string {
+func generateBugFixPrompt(_ GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")
@@ -363,7 +363,7 @@ func generateBugFixPrompt(ctx GenerateContext) string {
 	return sb.String()
 }
 
-func generatePRDescriptionPrompt(ctx GenerateContext) string {
+func generatePRDescriptionPrompt(_ GenerateContext) string {
 	var sb strings.Builder
 
 	sb.WriteString("---\n")

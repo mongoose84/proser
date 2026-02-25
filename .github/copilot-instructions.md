@@ -17,4 +17,4 @@ Domain-specific instructions in [.github/instructions/](.github/instructions/):
 - [Backend Guidelines](instructions/backend.instructions.md) - Go development patterns
 - [Testing Guidelines](instructions/testing.instructions.md) - Test strategies and patterns
 
-See [AGENTS.md](../AGENTS.md) for the complete project architecture and agent definitions.
+See [AGENTS.md](../../AGENTS.md) for the complete project architecture and agent definitions.
