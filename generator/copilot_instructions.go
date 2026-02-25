@@ -27,15 +27,8 @@ func (g *CopilotInstructionsGenerator) Generate(ctx GenerateContext) (map[string
 	if cfg.General.Description != "" {
 		sb.WriteString(cfg.General.Description + "\n\n")
 	} else {
-		sb.WriteString("This project follows specific development guidelines for different technology stacks.\n\n")
+		sb.WriteString("This project follows PROSE framework conventions for AI-native development.\n\n")
 	}
-
-	sb.WriteString("## Universal Principles\n")
-	sb.WriteString("- Write clean, maintainable, and well-documented code\n")
-	sb.WriteString("- Follow established project conventions and patterns\n")
-	sb.WriteString("- Ensure proper error handling and logging\n")
-	sb.WriteString("- Implement comprehensive testing for all new features\n")
-	sb.WriteString("- Maintain consistent code formatting and style\n\n")
 
 	// Technology stack overview
 	if cfg.HasFrontend() || cfg.HasBackend() {
@@ -83,17 +76,21 @@ func (g *CopilotInstructionsGenerator) Generate(ctx GenerateContext) (map[string
 		sb.WriteString(cfg.General.CustomRules + "\n\n")
 	}
 
-	sb.WriteString("## Documentation Standards\n")
-	sb.WriteString("- Include clear README files for major components\n")
-	sb.WriteString("- Document all public APIs and interfaces\n")
-	sb.WriteString("- Provide usage examples where appropriate\n")
-	sb.WriteString("- Keep documentation up-to-date with code changes\n\n")
-
-	sb.WriteString("## Performance Considerations\n")
-	sb.WriteString("- Write efficient algorithms and data structures\n")
-	sb.WriteString("- Consider scalability implications\n")
-	sb.WriteString("- Optimize for both development and runtime performance\n")
-	sb.WriteString("- Profile and benchmark critical code paths\n")
+	// Instructions Hierarchy for Progressive Disclosure
+	if cfg.HasBackend() || cfg.HasFrontend() || cfg.Testing.Framework != "" {
+		sb.WriteString("## Instructions Hierarchy\n")
+		sb.WriteString("This file provides global context. Specialized instructions:\n")
+		if cfg.HasBackend() {
+			sb.WriteString("- [Backend Development](.github/instructions/backend.instructions.md)\n")
+		}
+		if cfg.HasFrontend() {
+			sb.WriteString("- [Frontend Development](.github/instructions/frontend.instructions.md)\n")
+		}
+		if cfg.Testing.Framework != "" {
+			sb.WriteString("- [Testing Guidelines](.github/instructions/testing.instructions.md)\n")
+		}
+		sb.WriteString("\n")
+	}
 
 	// Store the file with a relative path from target
 	relPath := filepath.Join(".github", "copilot-instructions.md")

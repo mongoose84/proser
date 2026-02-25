@@ -32,6 +32,8 @@ func (g *FrontendInstructionsGenerator) Generate(ctx GenerateContext) (map[strin
 	sb.WriteString("---\n")
 	sb.WriteString(fmt.Sprintf("# %s Development Guidelines\n\n", cfg.Frontend.Language))
 
+	sb.WriteString("Inherits from [global instructions](../copilot-instructions.md).\n\n")
+
 	// --- Context Loading ---
 	sb.WriteString("## Context Loading\n")
 	sb.WriteString("Review [project conventions](../../README.md)")

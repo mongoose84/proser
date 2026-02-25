@@ -32,6 +32,8 @@ func (g *BackendInstructionsGenerator) Generate(ctx GenerateContext) (map[string
 	sb.WriteString("---\n")
 	sb.WriteString(fmt.Sprintf("# %s Backend Development Guidelines\n\n", cfg.Backend.Language))
 
+	sb.WriteString("Inherits from [global instructions](../copilot-instructions.md).\n\n")
+
 	// --- Context Loading ---
 	sb.WriteString("## Context Loading\n")
 	switch lang {

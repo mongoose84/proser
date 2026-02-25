@@ -113,6 +113,7 @@ func (g *AgentsMdGenerator) writeProjectOverview(sb *strings.Builder, cfg config
 
 func (g *AgentsMdGenerator) writeRepositoryStructure(sb *strings.Builder, cfg config.ProjectConfig) {
 	sb.WriteString("## Repository Structure\n\n")
+	sb.WriteString("*Note: This is a typical structure. Your actual project layout may vary.*\n\n")
 	sb.WriteString("```\n")
 	sb.WriteString(fmt.Sprintf("%s/\n", cfg.General.ProjectName))
 
